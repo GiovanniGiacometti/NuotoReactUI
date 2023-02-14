@@ -1,7 +1,7 @@
 
 
- class PlotMetadata{
-    constructor(x, y, title, xlabel, ylabel,legendName,mode,type,frame) {
+export default class PlotMetadata{
+    constructor({x, y, title, xlabel, ylabel,legendName,mode,type, frame}) {
         this.x = x;
         this.y = y;
         this.title = title;
@@ -15,7 +15,3 @@
     }
 }
 
-
-export default function defineMetadata({x, y, title, xlabel, ylabel,legendName,mode,type, frame}){
-    return new PlotMetadata(x, y, title, xlabel, ylabel,legendName,mode,type, frame);
-}

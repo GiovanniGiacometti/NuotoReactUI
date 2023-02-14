@@ -10,3 +10,7 @@ export const velocity_y = [[0.015416, 0.015416, 0.0096571, 0.0042095, 0.0019834,
 export const mapping =  {"Head": 0, "RightShoulder": 1, "LeftShoulder": 2, "RightElbow": 3, "LeftElbow": 4, "RightWrist": 5, "LeftWrist": 6, "RightHand": 7, "LeftHand": 8, "RightHip": 9, "LeftHip": 10, "RightKnee": 11, "LeftKnee": 12, "RightAnkle": 13, "LeftAnkle": 14, "RightFeet": 15, "LeftFeet": 16};
 
 export const totalFrames = 694
+
+
+export const acceleration_x = velocity_x;
+export const acceleration_y = velocity_y;

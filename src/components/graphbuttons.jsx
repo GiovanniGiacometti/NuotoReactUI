@@ -1,13 +1,13 @@
-import ReactPlayer from 'react-player'
+import { Button,ButtonGroup } from "@mui/material";
 
 
+export default function GraphButtons ({functions,names}){
 
-export default function GraphButtons ({}){
+    var buttons = functions.map((f,i) => <Button key={i+names[i]} onClick={f}>{names[i]}</Button>);
+
       return (
         <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <Button>One</Button>
-            <Button>Two</Button>
-            <Button>Three</Button>
+            {buttons}
         </ButtonGroup>
       );
 }

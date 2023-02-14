@@ -1,9 +1,10 @@
 import Plot from 'react-plotly.js';
 import * as data from "../data/data";
+import GraphButtons from './graphbuttons';
 
 
 
-export default function PlotNuoto ({metaData}){
+export default function PlotNuoto ({metaData,buttonsMetadata}){
     var xy = {
         x: metaData.x,
         y:  metaData.y,
@@ -51,11 +52,13 @@ export default function PlotNuoto ({metaData}){
           },
         width: "100%", 
         height:"320"
-    
-    
     }
     return (
-        <Plot data={plots} layout={layout} config={{displayModeBar:false}}/>
+        <>
+            <GraphButtons functions={buttonsMetadata.functions} names={buttonsMetadata.names}/>
+            <Plot data={plots} layout={layout} config={{displayModeBar:false}}/>
+        </>
+        
       );
 }
 
