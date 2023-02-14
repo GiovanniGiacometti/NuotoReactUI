@@ -17,8 +17,17 @@ const mdTheme = createTheme();
 export default function Dashboard() {
 
     const [target, setTarget] = useState(0);
-    var metaPlotUp = defineMetadata({x: data.position_x[target], y:data.position_y[target], title:"Position of " + data.mapping[target], xlabel: "X", ylabel: "Y",legendName:"Position",mode:"markers",type:"scatter"});
-    var metaPlotDown = defineMetadata({x:[...Array(data.totalFrames).keys()], y:data.velocity_x[target], title:"X velocity of " + data.mapping[target], xlabel: "Frames", ylabel: "Velocity",legendName:"Velocity",mode:"markers",type:"scatter"});
+    const [seconds, setSeconds] = useState(0);
+    const [duration, setDuration] = useState(0);
+    
+
+    var metaPlotUp =   defineMetadata({x: data.position_x[target], y:data.position_y[target], title:"Position of " + Object.keys(data.mapping)[target], xlabel: "X", ylabel: "Y",legendName:"Position",mode:"markers",type:"scatter", frame:getFrame(seconds, duration)});
+    var metaPlotDown = defineMetadata({x:[...Array(data.totalFrames).keys()], y:data.velocity_x[target], title:"X velocity of " + Object.keys(data.mapping)[target], xlabel: "Frames", ylabel: "Velocity",legendName:"Velocity",mode:"markers",type:"scatter", frame:getFrame(seconds, duration)});
+
+    var updateFrame = (progress) => setSeconds(progress.playedSeconds);
+
+    var updateDuration = (duration) => setDuration(duration);
+    
 
     var targetSelection = (id) => {
         const newTarget = data.mapping[id];
@@ -35,21 +44,22 @@ export default function Dashboard() {
                 height: '100vh',
                 overflow: 'auto'}}> 
                 <Grid container 
-                    justifyContent="space-evenly"
+                    justifyContent="center"
                     alignItems="center"
                     rowSpacing={5}
-                    columnSpacing={4}
-                    sx={{p:2}}>
-                    <Grid item xs={12} md={8} lg={5} 
+                    columnSpacing={5}
+                    sx={{p:2, mt:2}}>
+
+                    <Grid item xs={12} lg={5} 
                     container
                     direction="column"
                     justifyContent="space-evenly"
                     rowSpacing={1}
                     columnSpacing={1}>
-                        <Grid item xs={12} md={8} lg={5} >
+                        <Grid item xs={12} md={12} lg={12} >
                             <PlotNuoto metaData={metaPlotUp}/>
                         </Grid>
-                        <Grid item xs={12} md={8} lg={5}>
+                        <Grid item xs={12} md={12} lg={12}>
                             <PlotNuoto  metaData={metaPlotDown}/>
                         </Grid>
                     </Grid>
@@ -57,13 +67,16 @@ export default function Dashboard() {
                         container
                         alignItems="center"
                         direction="column"
-                        justifyContent="space-evenly" 
-                        xs={12} md={8} lg={5}>
+                        justifyContent="space-evenly"
+                        rowSpacing={4} 
+                        columnSpacing={1} 
+                        xs={12}lg={4}>
                         <Grid><Image targetSelection={targetSelection}/></Grid>
-                    </Grid>
+                    
 
-                    <Grid item xs={12} md={8} lg={5}>
-                        <Video />
+                        <Grid item xs={12} lg={4}>
+                            <Video onProg={updateFrame} onDur={updateDuration}/>
+                    </Grid>
                     </Grid>
                 
                 
@@ -72,3 +85,10 @@ export default function Dashboard() {
         </ThemeProvider>
     );
 }
+
+
+
+
+ function getFrame(seconds,length){
+    return Math.ceil(seconds / length * data.totalFrames);
+ }
