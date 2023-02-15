@@ -1,6 +1,8 @@
 import Plot from 'react-plotly.js';
 import * as data from "../data/data";
 import GraphButtons from './graphbuttons';
+import Grid from '@mui/material/Grid';
+
 
 
 
@@ -12,12 +14,11 @@ export default function PlotNuoto ({metaData,buttonsMetadata}){
         mode: metaData.mode,
         type: metaData.type
     };
-
-
+    
     var selected = metaData.frame;
 
     if (metaData.x.length < data.totalFrames){
-        selected = Math.ceil(metaData.x.length * selected / data.totalFrames);
+        selected = metaData.x.length * selected / data.totalFrames;
     }
 
      var point = {
@@ -50,13 +51,25 @@ export default function PlotNuoto ({metaData,buttonsMetadata}){
             family: 'Arial',
             size: 18,
           },
-        width: "100%", 
-        height:"320"
+          height : 300,
+          width : 700,
+          margin: {
+            r: 10,
+            b: 50,
+            t: 50,
+          }
     }
     return (
         <>
-            <GraphButtons functions={buttonsMetadata.functions} names={buttonsMetadata.names}/>
-            <Plot data={plots} layout={layout} config={{displayModeBar:false}}/>
+            <Grid container direction="column">
+                <Grid item >
+                    <GraphButtons functions={buttonsMetadata.functions} names={buttonsMetadata.names}/>
+                </Grid>
+                <Grid item >
+                    <Plot data={plots} layout={layout} config={{displayModeBar:false}}/>
+                </Grid>
+                
+            </Grid>
         </>
         
       );

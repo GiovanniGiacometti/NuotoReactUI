@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
 import ImageMapper from 'react-img-mapper';
 
 
 
-export default function Image ({targetSelection}){
+export default function ImageBody ({targetSelection}){
 
     const lineWidth = 3;
     const fillColor = "blue";

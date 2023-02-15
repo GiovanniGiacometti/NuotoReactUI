@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Video from '../components/video';
-import Image from '../components/image';
+import ImageBody from '../components/image';
 import { useState } from 'react';
 import * as data from "../data/data";
 import PlotNuoto from '../components/plot';
@@ -22,7 +22,6 @@ export default function Dashboard() {
     const [plotVelocity, setPlotVelocity] = useState(true);
     const [plotX, setPlotX] = useState(true);
     
-
     var metaPlotUp = new PlotMetadata({
                                         x: data.position_x[target],
                                         y: data.position_y[target], 
@@ -35,6 +34,7 @@ export default function Dashboard() {
                                         frame: getFrame(seconds, duration)});
     
     
+
     var toPlot = data.velocity_x[target];
     var title = "X velocity of ";
     if(plotVelocity && !plotX) {
@@ -49,9 +49,6 @@ export default function Dashboard() {
         toPlot = data.acceleration_y[target]; 
         title = "Y acceleration of ";
     }
-
-
-
 
     var metaPlotDown = new PlotMetadata({
                                         x: [...Array(data.totalFrames).keys()], 
@@ -88,7 +85,6 @@ export default function Dashboard() {
 
     var updateDuration = (duration) => setDuration(duration);
     
-
     var targetSelection = (id) => {
         const newTarget = data.mapping[id];
         setTarget(newTarget);
@@ -108,20 +104,19 @@ export default function Dashboard() {
                     alignItems="center"
                     rowSpacing={5}
                     columnSpacing={5}
-                    sx={{p:2, mt:2}}>
-
-                    <Grid item xs={12} lg={5} 
-                    container
-                    direction="column"
-                    justifyContent="space-evenly"
-                    rowSpacing={1}
-                    columnSpacing={1}>
-                        <Grid item xs={12} md={12} lg={12} >
-                            <PlotNuoto metaData={metaPlotUp} buttonsMetadata={buttonsPlotUp}/>
-                        </Grid>
-                        <Grid item xs={12} md={12} lg={12}>
-                            <PlotNuoto  metaData={metaPlotDown} buttonsMetadata={buttonsPlotDown}/>
-                        </Grid>
+                    sx={{p:2}}>
+                    <Grid item xs={12} lg={6} 
+                        container
+                        direction="column"
+                        justifyContent="space-evenly"
+                        rowSpacing={1}
+                        columnSpacing={1}>
+                            <Grid item xs={12} md={12} lg={12} >
+                                <PlotNuoto metaData={metaPlotUp} buttonsMetadata={buttonsPlotUp}/>
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={12}>
+                                <PlotNuoto  metaData={metaPlotDown} buttonsMetadata={buttonsPlotDown}/>
+                            </Grid>
                     </Grid>
                     <Grid item 
                         container
@@ -130,13 +125,14 @@ export default function Dashboard() {
                         justifyContent="space-evenly"
                         rowSpacing={4} 
                         columnSpacing={1} 
-                        xs={12}lg={4}>
-                        <Grid><Image targetSelection={targetSelection}/></Grid>
-                    
-
+                        xs={12}lg={6}>
+                        <Grid item xs={12} lg={4}>
+                            <ImageBody targetSelection={targetSelection}/>
+                        </Grid>
+              
                         <Grid item xs={12} lg={4}>
                             <Video onProg={updateFrame} onDur={updateDuration}/>
-                    </Grid>
+                        </Grid>
                     </Grid>
                 
                 
