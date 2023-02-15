@@ -21,6 +21,7 @@ export default function Dashboard() {
     const [duration, setDuration] = useState(0);
     const [plotVelocity, setPlotVelocity] = useState(true);
     const [plotX, setPlotX] = useState(true);
+    const [firstRender, setFirstRender] = useState(true);
     
     var metaPlotUp = new PlotMetadata({
                                         x: data.position_x[target],
@@ -55,8 +56,8 @@ export default function Dashboard() {
                                         y: toPlot ,  
                                         title: title + Object.keys(data.mapping)[target], 
                                         xlabel: "Frames", 
-                                        ylabel: plotVelocity ? "Velocity" : "Acceleration", 
-                                        legendName: plotVelocity ? "Velocity" : "Acceleration",  
+                                        ylabel: (plotVelocity ? "Velocity" : "Acceleration")      + (plotX ? " X" : "Y"), 
+                                        legendName: (plotVelocity ? "Velocity" : "Acceleration")  + (plotX ? " X" : "Y"),  
                                         mode:"markers",  
                                         type:"scatter", 
                                         frame:getFrame(seconds, duration)});
@@ -86,6 +87,7 @@ export default function Dashboard() {
     var updateDuration = (duration) => setDuration(duration);
     
     var targetSelection = (id) => {
+        setFirstRender(false);
         const newTarget = data.mapping[id];
         setTarget(newTarget);
     }
@@ -102,19 +104,21 @@ export default function Dashboard() {
                 <Grid container 
                     justifyContent="center"
                     alignItems="center"
-                    rowSpacing={5}
-                    columnSpacing={5}
+                    rowSpacing={1}
+                    columnSpacing={1}
                     sx={{p:2}}>
-                    <Grid item xs={12} lg={6} 
+                    <Grid item xs={12} md={12} lg={6} 
                         container
                         direction="column"
-                        justifyContent="space-evenly"
+                        justifyContent="center"
+                        alignItems="center"
                         rowSpacing={1}
-                        columnSpacing={1}>
-                            <Grid item xs={12} md={12} lg={12} >
+                        columnSpacing={1}
+                        >
+                            <Grid item xs={12} md={12} lg={12} sx={{ml:10,mt:10}}>
                                 <PlotNuoto metaData={metaPlotUp} buttonsMetadata={buttonsPlotUp}/>
                             </Grid>
-                            <Grid item xs={12} md={12} lg={12}>
+                            <Grid item xs={12} md={12} lg={12}sx={{ml:10}}>
                                 <PlotNuoto  metaData={metaPlotDown} buttonsMetadata={buttonsPlotDown}/>
                             </Grid>
                     </Grid>
@@ -122,12 +126,12 @@ export default function Dashboard() {
                         container
                         alignItems="center"
                         direction="column"
-                        justifyContent="space-evenly"
-                        rowSpacing={4} 
+                        justifyContent="center"
+                        rowSpacing={7} 
                         columnSpacing={1} 
-                        xs={12}lg={6}>
+                        xs={12} md={12} lg={6}>
                         <Grid item xs={12} lg={4}>
-                            <ImageBody targetSelection={targetSelection}/>
+                            <ImageBody targetSelection={targetSelection} first={target}/>
                         </Grid>
               
                         <Grid item xs={12} lg={4}>

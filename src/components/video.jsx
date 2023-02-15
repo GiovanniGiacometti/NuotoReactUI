@@ -10,7 +10,10 @@ export default function Video ({onProg,onDur}){
             muted
             onProgress={onProg}
             onDuration={onDur}
-            style={{"width":"3"}}
+            width="320px"
+            height="200px"
+
+            //real = 256*144
           />
       );
 }

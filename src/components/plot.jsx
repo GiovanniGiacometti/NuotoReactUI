@@ -51,8 +51,9 @@ export default function PlotNuoto ({metaData,buttonsMetadata}){
             family: 'Arial',
             size: 18,
           },
-          height : 300,
+          height : 250,
           width : 700,
+          maxWidth:"100%",
           margin: {
             r: 10,
             b: 50,

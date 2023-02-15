@@ -1,14 +1,14 @@
 import ImageMapper from 'react-img-mapper';
 
 
+export default function ImageBody({targetSelection, first}){
 
-export default function ImageBody ({targetSelection}){
-
-    const lineWidth = 3;
-    const fillColor = "blue";
+    const lineWidth = 5;
+    const fillColorChosen = "blue";
+    const fillColorNotChosen = "pink";
     const strokeColor = "black"
     const URL = "images/download.png";
-    const MAP = {
+    var MAP = {
         name: 'bodymap',
         areas: [
             {
@@ -16,7 +16,6 @@ export default function ImageBody ({targetSelection}){
               "title": "Head",
               "shape": "poly",
               "name": "Head",
-              "stayHighlighted":true,
               "coords": [
                 117,6,107,8,99,15,94,26,93,33,93,39,97,50,100,56,101,67,107,67,131,67,133,58,133,53,139,49,141,40,140,31,141,23,133,12,128,7
               ]
@@ -60,5 +59,52 @@ export default function ImageBody ({targetSelection}){
           ],
     };
 
-    return <ImageMapper src={URL} map={MAP} onClick={area => targetSelection(area.id)} stayHighlighted strokeColor={strokeColor} fillColor={fillColor} lineWidth={lineWidth}/>;
+    
+    for (let i=0;i<MAP["areas"].length;i++){
+        if(i===first){
+          MAP["areas"][i]["preFillColor"] = fillColorChosen;
+          MAP["areas"][i]["active"] = true;
+        }
+        else{
+          MAP["areas"][i]["active"] = false;
+          MAP["areas"][i]["preFillColor"] = fillColorNotChosen;
+        }
+    }
+   
+
+    return <ImageMapper 
+                width={170} 
+                imgWidth={221} 
+                src={URL} 
+                map={MAP} 
+                onClick={area => targetSelection(area.id)} 
+                stayHighlighted 
+                strokeColor={strokeColor}  
+                lineWidth={lineWidth}/>;
+
 }
+
+
+    // // console.log(MAP);
+    // // console.log(first);
+
+    // // const imageMapperRef = useRef(null);
+    // const ref = useRef(null);
+
+    // useEffect(() => {
+    //   if(first && ref.current){
+    //     console.log("Id");
+    //     const event = new CustomEvent("click",{ detail: {"id":0} })
+    //     ref.current.click();
+        
+    //   }
+    // });
+
+    // var onLoad = ()=>{
+    //   if(first && ref.current){
+    //     console.log("Id");
+    //     const event = new CustomEvent("click",{ detail: {"id":0} })
+    //     ref.current.click();
+        
+    //   }
+    // }
