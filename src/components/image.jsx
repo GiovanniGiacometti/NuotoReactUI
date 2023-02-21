@@ -1,6 +1,6 @@
 import ImageMapper from "react-img-mapper";
 
-export default function ImageBody({ targetSelection, first, fillColorChosen, fillColorNotChosen }) {
+export default function ImageBody({ targetSelection, first, fillColorChosen, fillColorNotChosen, imageWidth }) {
   const lineWidth = 5;
   const strokeColor = "black";
   const URL = "images/download.png";
@@ -61,7 +61,7 @@ export default function ImageBody({ targetSelection, first, fillColorChosen, fil
 
   return (
     <ImageMapper
-      width={170}
+      width={imageWidth}
       imgWidth={221}
       src={URL}
       map={MAP}

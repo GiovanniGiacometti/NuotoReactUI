@@ -17,12 +17,14 @@ import SettingsRadioButtons from "../components/radiosetting";
 import RadioButtonsMetadata from "../structures/radiobuttonsmetadata";
 
 const mdTheme = createTheme();
-const paperHeigth = 180;
-const paperVideoHeigth = 300;
+const paperHeigth = 210;
+const paperVideoHeigth = 270;
 
 const initialColorOption = C.colorOptions[0];
 
 const initialVectorOption = C.vectorsOptions[0];
+
+const imageWidth = 190;
 
 export default function Dashboard() {
   const [target, setTarget] = useState(0);
@@ -71,12 +73,12 @@ export default function Dashboard() {
   if (vector === C.vectorsOptions[1]) {
     vector = {
       dx: data.velocity_x[target],
-      dy: data.velocity_y[target]
+      dy: data.velocity_y[target],
     };
   } else if (vector === C.vectorsOptions[2]) {
     vector = {
       dx: data.velocity_x[target],
-      dy: data.velocity_y[target]
+      dy: data.velocity_y[target],
     };
   }
 
@@ -111,13 +113,16 @@ export default function Dashboard() {
     vector: C.vectorsOptions[0],
   });
 
-  var functionsDown = [
+  var functionsDown1 = [
     () => {
       setPlotX(true);
     },
     () => {
       setPlotX(false);
     },
+  ];
+
+  var functionsDown2 = [
     () => {
       setPlotVelocity(true);
     },
@@ -125,23 +130,34 @@ export default function Dashboard() {
       setPlotVelocity(false);
     },
   ];
-  var colorsDown = [
+
+  var colorsDown1 = [
     plotX ? mdTheme.palette.primary : unSelected,
     plotX ? unSelected : mdTheme.palette.primary,
+  ];
+
+  var colorsDown2 = [
     plotVelocity ? mdTheme.palette.primary : unSelected,
     plotVelocity ? unSelected : mdTheme.palette.primary,
   ];
 
-  const namesDown = ["X-Frames", "Y-Frames", "Velocity", "Acceleration"];
+  const namesDown1 = ["X-Frames", "Y-Frames"];
+  const namesDown2 = ["Velocity", "Acceleration"];
 
   var colorsUp = [mdTheme.palette.primary, unSelected, unSelected];
   var functionsUp = [() => {}, () => {}, () => {}];
   const namesUp = ["Trajectory", "KPI", "Radar"];
 
-  var buttonsPlotDown = new ButtonsMetadata({
-    functions: functionsDown,
-    names: namesDown,
-    colors: colorsDown,
+  var buttonsPlotDown1 = new ButtonsMetadata({
+    functions: functionsDown1,
+    names: namesDown1,
+    colors: colorsDown1,
+  });
+
+  var buttonsPlotDown2 = new ButtonsMetadata({
+    functions: functionsDown2,
+    names: namesDown2,
+    colors: colorsDown2,
   });
 
   var buttonsPlotUp = new ButtonsMetadata({
@@ -197,21 +213,15 @@ export default function Dashboard() {
       }}
     >
       <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
-        <Grid
-          container
-          justifyContent="flex-start"
-          alignItems="flex-start"
-          rowSpacing={1}
-          columnSpacing={3}
-        >
+        <Grid container rowSpacing={1} columnSpacing={3}>
           <Grid item xs={12} md={12} lg={12}>
             <Paper
               sx={{
-                p: 2,
+                p: 1,
                 display: "flex",
                 flexDirection: "row",
                 height: paperHeigth,
-                justifyContent: "center",
+                justifyContent: "space-between",
                 alignItems: "center",
               }}
             >
@@ -221,76 +231,95 @@ export default function Dashboard() {
               <SettingsRadioButtons metaData={metaRadioSettingsVectors} />
             </Paper>
           </Grid>
+
           <Grid
             item
             container
             xs={12}
             md={12}
-            lg={8}
-            direction="column"
-            justifyContent="space-evenly"
-            alignItems="center"
+            lg={12}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
             rowSpacing={1}
             columnSpacing={1}
           >
-            <Grid item xs={12} md={12} lg={12}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "row",
-                  height: paperHeigth,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <GraphButtons metaData={buttonsPlotDown} />
-                <PlotNuoto metaData={metaPlotDown} />
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  height: paperVideoHeigth,
-                }}
-              >
-                <Grid
-                  container
-                  item
-                  xs={12}
-                  md={12}
-                  lg={12}
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="center"
+            <Grid
+              item
+              container
+              xs={12}
+              md={12}
+              lg={9}
+              direction="column"
+              justifyContent="space-between"
+              alignItems="center"
+              rowSpacing={1}
+              columnSpacing={1}
+            >
+              <Grid item xs={12} md={12} lg={12}>
+                <Paper
+                  sx={{
+                    p: 1,
+                    display: "flex",
+                    flexDirection: "row",
+                    height: paperHeigth,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Grid
+                    container
+                    direction="column"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                  >
+                    <Grid item>
+                      <GraphButtons metaData={buttonsPlotDown1} />
+                    </Grid>
+                    <Grid item>
+                      <GraphButtons metaData={buttonsPlotDown2} />
+                    </Grid>
+                  </Grid>
+
+                  <PlotNuoto metaData={metaPlotDown} />
+                </Paper>
+              </Grid>
+              <Grid item xs={12} md={12} lg={12}>
+                <Paper
+                  sx={{
+                    p: 1,
+                    display: "flex",
+                    flexDirection: "row",
+                    height: paperVideoHeigth,
+                    width: 550,
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                  }}
                 >
                   <Video onProg={updateFrame} onDur={updateDuration} />
                   <Typography>
                     {"Frame : " + getFrame(seconds, duration)}
                   </Typography>
-                </Grid>
+                </Paper>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} md={12} lg={2.2}>
+              <Paper
+                sx={{
+                  p: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  width: imageWidth + 16
+                }}
+              >
+                <ImageBody
+                  targetSelection={targetSelection}
+                  first={target}
+                  fillColorChosen={selectionColor}
+                  fillColorNotChosen={unSelected}
+                  imageWidth={imageWidth}
+                />
               </Paper>
             </Grid>
-          </Grid>
-          <Grid item xs={12} lg={4}>
-            <Paper
-              sx={{
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-                width: "200px",
-              }}
-            >
-              <ImageBody
-                targetSelection={targetSelection}
-                first={target}
-                fillColorChosen={selectionColor}
-                fillColorNotChosen={unSelected}
-              />
-            </Paper>
           </Grid>
         </Grid>
       </Container>
@@ -312,7 +341,7 @@ function getValue(x, y) {
 
 function addColorBarAttr(colorbar) {
   colorbar["titleside"] = "Top";
-  colorbar["x"] = -0.4;
+  colorbar["x"] = -0.25;
   colorbar["nticks"] = 4;
   return colorbar;
 }

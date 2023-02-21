@@ -11,7 +11,7 @@ export default function PlotNuoto({ metaData }) {
     type: metaData.type,
     marker: {
       color: metaData.color,
-      size: 2,
+      size: 6,
       colorbar: metaData.colorbar,
     },
   };
@@ -62,10 +62,10 @@ export default function PlotNuoto({ metaData }) {
     };
 
     let angle = Math.abs((Math.atan2(dy, dx) * 180) / Math.PI);
-    
-    if(dx > 0 && dy < 0) angle -= 360;
-    else if(dx < 0 && dy > 0) angle -= 180;
-    else if(dx < 0 && dy < 0) angle += 180;
+
+    if (dx > 0 && dy < 0) angle -= 360;
+    else if (dx < 0 && dy > 0) angle -= 180;
+    else if (dx < 0 && dy < 0) angle += 180;
 
     var arrow = {
       x: [metaData.x[Math.ceil(selected)] + dx],
@@ -81,38 +81,45 @@ export default function PlotNuoto({ metaData }) {
       type: "scatter",
     };
 
-
-    console.log(dx)
-    console.log(dy)
-    console.log(angle)
-
     plots.push(line);
     plots.push(arrow);
   }
 
+  let offsetX = (Math.max(...metaData.x) - Math.min(...metaData.x)) / 10;
+  let offsetY = (Math.max(...metaData.y) - Math.min(...metaData.y)) / 10;
+
   var layout = {
     title: metaData.title,
     xaxis: {
+      range: [
+        Math.min(...metaData.x) - offsetX,
+        Math.max(...metaData.x) + offsetX,
+      ],
       title: {
         text: metaData.xlabel,
+        standoff: 0,
       },
     },
     yaxis: {
+      range: [
+        Math.min(...metaData.y) - offsetY,
+        Math.max(...metaData.y) + offsetY,
+      ],
       title: {
         text: metaData.ylabel,
+        standoff: 0,
       },
     },
     font: {
       family: "Arial",
-      size: 10,
+      size: 12,
     },
-    height: 180,
-    width: 600,
-    maxWidth: "100%",
+    height: 200,
+    width: 750,
     margin: {
       r: 10,
-      b: 50,
-      t: 50,
+      b: 30,
+      t: 40,
     },
   };
   return (
@@ -123,16 +130,3 @@ export default function PlotNuoto({ metaData }) {
     ></Plot>
   );
 }
-
-// var trace2 = {
-//   x: [0.8],
-//   y: [0.8],
-//   mode: 'markers',
-//   marker: {
-//     symbol: 'triangle-down',
-//     angle: 90,
-//     size: 20,
-//     color: 'blue'
-//   },
-//   type: 'scatter'
-// };
