@@ -1,8 +1,8 @@
-import Dashboard from "./scenes/dashboard";
+import Background from "./scenes/background";
 
 function App() {
   
-  return <Dashboard/>;
+  return <Background/>;
 }
 
 export default App;

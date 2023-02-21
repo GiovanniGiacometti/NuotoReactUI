@@ -9,8 +9,22 @@ export const velocity_y = [[0.015416, 0.015416, 0.0096571, 0.0042095, 0.0019834,
 
 export const mapping =  {"Head": 0, "RightShoulder": 1, "LeftShoulder": 2, "RightElbow": 3, "LeftElbow": 4, "RightWrist": 5, "LeftWrist": 6, "RightHand": 7, "LeftHand": 8, "RightHip": 9, "LeftHip": 10, "RightKnee": 11, "LeftKnee": 12, "RightAnkle": 13, "LeftAnkle": 14, "RightFeet": 15, "LeftFeet": 16};
 
-export const totalFrames = 694
+export const totalFrames = 694;
+
+export const colorMapping = ["#ffeb3b", "#0d47a1", "#64b5f6", "#1b5e20", "#66bb6a"];
 
 
 export const acceleration_x = velocity_x;
 export const acceleration_y = velocity_y;
+
+// 1 = testa = giallo
+// 2 = spalla destra = blu scuro,                  3 = spalla sinistra = blu chiaro
+// 4 = gomito destro = verde scuro,            5 = gomito sinistro = verde chiaro
+// 6 = polso destro = rosso scuro,               7 = polso sinistro = rosso chiaro
+// 8 = punta mano destra = viola scuro,      9 = punta mano sinistra = viola chiaro
+// 10 = bacino destro = arancione scuro,    11 = bacino sinistro = arancione chiaro
+// 12 = ginocchio destro = grigio scuro,     13 = ginocchio sinistro = grigio chiaro
+// 14 = caviglia destra = celeste scuro,       15 = caviglia sinistra = celeste chiaro
+// 16 = punta piede destro = rosa scuro,     17 = punta piede sinistro = rosa chiaro)
+
+

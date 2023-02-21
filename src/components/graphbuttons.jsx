@@ -1,15 +1,16 @@
 import { Button, ButtonGroup } from "@mui/material";
 
-export default function GraphButtons({ functions, names,colors }) {
+export default function GraphButtons({metaData}) {
   return (
     <ButtonGroup
       variant="contained"
-      aria-label="outlined primary button group"
-      sx={{ backgroundColor: "rgba(0, 0, 255, 0)"}}
+      aria-label="vertical contained button group"
+      orientation="vertical"
+      sx={{ backgroundColor: "rgba(0, 0, 0, 0)"}}
     >
-      {functions.map((f, i) => (
-        <Button key={i + names[i]} onClick={f} size={"small"} sx={{backgroundColor:colors[i]}}>
-          {names[i]}
+      {metaData.functions.map((f, i) => (
+        <Button key={i + metaData.names[i]} onClick={f} size={"small"} sx={{backgroundColor:metaData.colors[i]}}>
+          {metaData.names[i]}
         </Button>
       ))}
     </ButtonGroup>
