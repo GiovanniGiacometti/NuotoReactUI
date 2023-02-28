@@ -1,5 +1,4 @@
 import Plot from "react-plotly.js";
-import * as data from "../data/data";
 import * as C from "../data/constants";
 
 export default function PlotNuoto({ metaData }) {
@@ -14,86 +13,80 @@ export default function PlotNuoto({ metaData }) {
       size: 6,
       colorbar: metaData.colorbar,
     },
+    showlegend: true,
   };
 
-  var selected = metaData.frame;
+  var plots = [xy];
 
-  if (metaData.x.length < data.totalFrames) {
-    selected = (metaData.x.length * selected) / data.totalFrames;
-  }
-
-  var point = {
-    x: [metaData.x[Math.ceil(selected)]],
-    y: [metaData.y[Math.ceil(selected)]],
-    name: "frame",
-    mode: "markers",
-    type: "scatter",
-    marker: {
-      color: "rgb(255, 0, 0)",
-      size: 10,
-    },
-  };
-
-  var plots = [xy, point];
-
-  if (metaData.vector !== C.vectorsOptions[0]) {
-    // total frames value is different from the length of position array -> the red point is taken proportionally wrt to those values.
-    // when visualizing velocity, however, i visualize the velocity at the "real" frame, not at he one where the red point currently is.
-
-    var dx = metaData.vector.dx[metaData.frame]; //> 0 ? 0.1 : -0.1;
-    var dy = metaData.vector.dy[metaData.frame]; //> 0 ? 0.1 : -0.1;
-
-    var line = {
-      x: [
-        metaData.x[Math.ceil(selected)],
-        metaData.x[Math.ceil(selected)] + dx,
-      ],
-      y: [
-        metaData.y[Math.ceil(selected)],
-        metaData.y[Math.ceil(selected)] + dy,
-      ],
-      mode: "lines",
-      line: {
-        width: 2,
-        color: "red",
-      },
-      type: "scatter",
-      showlegend: false,
-    };
-
-    let angle = Math.abs((Math.atan2(dy, dx) * 180) / Math.PI);
-
-    if (dx > 0 && dy < 0) angle -= 360;
-    else if (dx < 0 && dy > 0) angle -= 180;
-    else if (dx < 0 && dy < 0) angle += 180;
-
-    var arrow = {
-      x: [metaData.x[Math.ceil(selected)] + dx],
-      y: [metaData.y[Math.ceil(selected)] + dy],
+  if (
+    !isNaN(metaData.x[metaData.frame]) &&
+    !isNaN(metaData.y[metaData.frame])
+  ) {
+    var point = {
+      x: [metaData.x[metaData.frame]],
+      y: [metaData.y[metaData.frame]],
+      name: "frame",
       mode: "markers",
-      marker: {
-        symbol: "triangle-right",
-        angle: -angle,
-        size: 10,
-        color: "red",
-      },
-      showlegend: false,
       type: "scatter",
+      marker: {
+        color: "rgb(255, 0, 0)",
+        size: 10,
+      },
     };
+    plots.push(point);
 
-    plots.push(line);
-    plots.push(arrow);
+    if (metaData.vector !== C.vectorsOptions[0]) {
+      var dx = metaData.vector.dx[metaData.frame];
+      var dy = metaData.vector.dy[metaData.frame];
+
+      var line = {
+        x: [metaData.x[metaData.frame], metaData.x[metaData.frame] + dx],
+        y: [metaData.y[metaData.frame], metaData.y[metaData.frame] + dy],
+        mode: "lines",
+        line: {
+          width: 2,
+          color: "red",
+        },
+        type: "scatter",
+        showlegend: false,
+      };
+
+      let angle = Math.abs((Math.atan2(dy, dx) * 180) / Math.PI);
+
+      if (dx > 0 && dy < 0) angle = 360 - angle;
+      else if (dx < 0 && dy > 0) angle = 180 - angle;
+      else if (dx < 0 && dy < 0) angle += 180;
+
+      var arrow = {
+        x: [metaData.x[metaData.frame] + dx],
+        y: [metaData.y[metaData.frame] + dy],
+        mode: "markers",
+        marker: {
+          symbol: "triangle-right",
+          angle: -angle,
+          size: 10,
+          color: "red",
+        },
+        showlegend: false,
+        type: "scatter",
+      };
+
+      plots.push(line);
+      plots.push(arrow);
+    }
   }
+  let xFiltered = metaData.x.filter((val) => !isNaN(val));
+  let yFiltered = metaData.y.filter((val) => !isNaN(val));
 
-  let offsetX = (Math.max(...metaData.x) - Math.min(...metaData.x)) / 10;
-  let offsetY = (Math.max(...metaData.y) - Math.min(...metaData.y)) / 10;
+  let offsetX = (Math.max(...xFiltered) - Math.min(...xFiltered)) / 10;
+  let offsetY = (Math.max(...yFiltered) - Math.min(...yFiltered)) / 10;
 
   var layout = {
     title: metaData.title,
     xaxis: {
       range: [
-        Math.min(...metaData.x) - offsetX,
-        Math.max(...metaData.x) + offsetX,
+        Math.min(...xFiltered) - offsetX,
+        Math.max(...xFiltered) + offsetX,
       ],
       title: {
         text: metaData.xlabel,
@@ -102,8 +95,8 @@ export default function PlotNuoto({ metaData }) {
     },
     yaxis: {
       range: [
-        Math.min(...metaData.y) - offsetY,
-        Math.max(...metaData.y) + offsetY,
+        Math.min(...yFiltered) - offsetY,
+        Math.max(...yFiltered) + offsetY,
       ],
       title: {
         text: metaData.ylabel,

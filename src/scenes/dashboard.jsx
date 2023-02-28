@@ -19,25 +19,46 @@ import RadioButtonsMetadata from "../structures/radiobuttonsmetadata";
 const mdTheme = createTheme();
 const paperHeigth = 210;
 const paperVideoHeigth = 270;
-
-const initialColorOption = C.colorOptions[0];
-
-const initialVectorOption = C.vectorsOptions[0];
-
 const imageWidth = 190;
 
+//color when a button is unselected.
+const unSelected = mdTheme.palette.grey[400];
+
+const initialColorOption = C.colorOptions[0];
+const initialVectorOption = C.vectorsOptions[0];
+
 export default function Dashboard() {
+  //selected target (head, shoulder...)
   const [target, setTarget] = useState(0);
+
+  //seconds the video is at
   const [seconds, setSeconds] = useState(1);
+
+  //duration of the video, it's updated once the video is loaded
   const [duration, setDuration] = useState(0);
-  const [plotVelocity, setPlotVelocity] = useState(true);
-  const [plotX, setPlotX] = useState(true);
+
+  //option for lower plot: what are we plotting?
+  const [lowerPlottingOption, setLowerPlottingOption] = useState(
+    C.lowerPlottingOptions[0]
+  );
+
+  //option for upper plot: what color are we using?
   const [colorOption, setColorOption] = useState(initialColorOption);
+
+  //option for upper plot: what vector are we plotting?
   const [vectorOption, setVectorOption] = useState(initialVectorOption);
+
+  //color of the target selected. Gives the color to the graph if target color is selected.
   const [selectionColor, setSelectionColor] = useState(data.colorMapping[0]);
 
-  const unSelected = mdTheme.palette.grey[400];
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     console.log(Video.getTime());
+  //   }, 100);
+  //   return () => clearInterval(interval);
+  // }, []);
 
+  //metadata for upper plot
   var metaPlotUp = new PlotMetadata({
     x: data.position_x[target],
     y: data.position_y[target],
@@ -84,18 +105,35 @@ export default function Dashboard() {
 
   metaPlotUp.setVector(vector);
 
-  var toPlot = data.velocity_x[target];
-  var title = "X velocity of ";
-
-  if (plotVelocity && !plotX) {
-    toPlot = data.velocity_y[target];
-    title = "Y velocity of ";
-  } else if (!plotVelocity && plotX) {
-    toPlot = data.acceleration_x[target];
-    title = "X acceleration of ";
-  } else if (!plotVelocity && !plotX) {
-    toPlot = data.acceleration_y[target];
-    title = "Y acceleration of ";
+  let toPlot;
+  let title;
+  let legendName;
+  let ylabel;
+  switch (lowerPlottingOption) {
+    case C.lowerPlottingOptions[0]:
+      toPlot = data.position_x[target];
+      title = "X position of ";
+      legendName = "X position";
+      ylabel = "X position";
+      break;
+    case C.lowerPlottingOptions[1]:
+      toPlot = data.position_y[target];
+      title = "Y position of";
+      legendName = "Y position";
+      ylabel = "Y position";
+      break;
+    case C.lowerPlottingOptions[2]:
+      toPlot = getValue(data.velocity_x[target], data.velocity_y[target]);
+      title = "Velocity of ";
+      legendName = "Velocity";
+      ylabel = "Velocity";
+      break;
+    default:
+      toPlot = getValue(data.velocity_x[target], data.velocity_y[target]);
+      title = "Acceleration of ";
+      legendName = "Acceleration";
+      ylabel = "Acceleration";
+      break;
   }
 
   var metaPlotDown = new PlotMetadata({
@@ -103,9 +141,8 @@ export default function Dashboard() {
     y: toPlot,
     title: title + Object.keys(data.mapping)[target],
     xlabel: "Frames",
-    ylabel: (plotVelocity ? "Velocity" : "Acceleration") + (plotX ? " X" : "Y"),
-    legendName:
-      (plotVelocity ? "Velocity" : "Acceleration") + (plotX ? " X" : "Y"),
+    ylabel: ylabel,
+    legendName: legendName,
     mode: "markers",
     type: "scatter",
     frame: getFrame(seconds, duration),
@@ -113,51 +150,44 @@ export default function Dashboard() {
     vector: C.vectorsOptions[0],
   });
 
-  var functionsDown1 = [
+  var functionsDown = [
     () => {
-      setPlotX(true);
+      setLowerPlottingOption(C.lowerPlottingOptions[0]);
     },
     () => {
-      setPlotX(false);
-    },
-  ];
-
-  var functionsDown2 = [
-    () => {
-      setPlotVelocity(true);
+      setLowerPlottingOption(C.lowerPlottingOptions[1]);
     },
     () => {
-      setPlotVelocity(false);
+      setLowerPlottingOption(C.lowerPlottingOptions[2]);
+    },
+    () => {
+      setLowerPlottingOption(C.lowerPlottingOptions[3]);
     },
   ];
 
-  var colorsDown1 = [
-    plotX ? mdTheme.palette.primary : unSelected,
-    plotX ? unSelected : mdTheme.palette.primary,
+  var colorsDown = [
+    lowerPlottingOption === C.lowerPlottingOptions[0]
+      ? mdTheme.palette.primary
+      : unSelected,
+    lowerPlottingOption === C.lowerPlottingOptions[1]
+      ? mdTheme.palette.primary
+      : unSelected,
+    lowerPlottingOption === C.lowerPlottingOptions[2]
+      ? mdTheme.palette.primary
+      : unSelected,
+    lowerPlottingOption === C.lowerPlottingOptions[3]
+      ? mdTheme.palette.primary
+      : unSelected,
   ];
-
-  var colorsDown2 = [
-    plotVelocity ? mdTheme.palette.primary : unSelected,
-    plotVelocity ? unSelected : mdTheme.palette.primary,
-  ];
-
-  const namesDown1 = ["X-Frames", "Y-Frames"];
-  const namesDown2 = ["Velocity", "Acceleration"];
 
   var colorsUp = [mdTheme.palette.primary, unSelected, unSelected];
   var functionsUp = [() => {}, () => {}, () => {}];
   const namesUp = ["Trajectory", "KPI", "Radar"];
 
-  var buttonsPlotDown1 = new ButtonsMetadata({
-    functions: functionsDown1,
-    names: namesDown1,
-    colors: colorsDown1,
-  });
-
-  var buttonsPlotDown2 = new ButtonsMetadata({
-    functions: functionsDown2,
-    names: namesDown2,
-    colors: colorsDown2,
+  var buttonsPlotDown = new ButtonsMetadata({
+    functions: functionsDown,
+    names: C.lowerPlottingOptions,
+    colors: colorsDown,
   });
 
   var buttonsPlotUp = new ButtonsMetadata({
@@ -264,22 +294,10 @@ export default function Dashboard() {
                     flexDirection: "row",
                     height: paperHeigth,
                     justifyContent: "space-between",
+                    alignItems: "center",
                   }}
                 >
-                  <Grid
-                    container
-                    direction="column"
-                    justifyContent="space-between"
-                    alignItems="flex-start"
-                  >
-                    <Grid item>
-                      <GraphButtons metaData={buttonsPlotDown1} />
-                    </Grid>
-                    <Grid item>
-                      <GraphButtons metaData={buttonsPlotDown2} />
-                    </Grid>
-                  </Grid>
-
+                  <GraphButtons metaData={buttonsPlotDown} />
                   <PlotNuoto metaData={metaPlotDown} />
                 </Paper>
               </Grid>
@@ -308,7 +326,7 @@ export default function Dashboard() {
                   p: 1,
                   display: "flex",
                   flexDirection: "column",
-                  width: imageWidth + 16
+                  width: imageWidth + 16,
                 }}
               >
                 <ImageBody
