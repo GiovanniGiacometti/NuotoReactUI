@@ -16,7 +16,6 @@ import GraphButtons from "../components/graphbuttons";
 import SettingsRadioButtons from "../components/radiosetting";
 import RadioButtonsMetadata from "../structures/radiobuttonsmetadata";
 
-
 const mdTheme = createTheme();
 const paperHeigth = 210;
 const paperVideoHeigth = 270;
@@ -51,13 +50,6 @@ export default function Dashboard() {
 
   //color of the target selected. Gives the color to the graph if target color is selected.
   const [selectionColor, setSelectionColor] = useState(data.colorMapping[0]);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     console.log(Video.getTime());
-  //   }, 100);
-  //   return () => clearInterval(interval);
-  // }, []);
 
   //metadata for upper plot
   var metaPlotUp = new PlotMetadata({
@@ -121,7 +113,7 @@ export default function Dashboard() {
       toPlot = data.position_y[target];
       title = "Y position of";
       legendName = "Y position";
-      ylabel = "Y Position [m]" ;
+      ylabel = "Y Position [m]";
       break;
     case C.lowerPlottingOptions[2]:
       toPlot = getValue(data.velocity_x[target], data.velocity_y[target]);
@@ -133,7 +125,7 @@ export default function Dashboard() {
       toPlot = getValue(data.velocity_x[target], data.velocity_y[target]);
       title = "Acceleration of ";
       legendName = "Acceleration";
-      ylabel = 'Acceleration [m^2/s]';
+      ylabel = "Acceleration [m^2/s]";
       break;
   }
 
