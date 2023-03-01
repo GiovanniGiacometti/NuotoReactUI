@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/NuotoReactUI/static/css/main.e6c13ad2.css",
-    "main.js": "/NuotoReactUI/static/js/main.2c124662.js",
+    "main.js": "/NuotoReactUI/static/js/main.0ef64b62.js",
     "index.html": "/NuotoReactUI/index.html",
     "main.e6c13ad2.css.map": "/NuotoReactUI/static/css/main.e6c13ad2.css.map",
-    "main.2c124662.js.map": "/NuotoReactUI/static/js/main.2c124662.js.map"
+    "main.0ef64b62.js.map": "/NuotoReactUI/static/js/main.0ef64b62.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.2c124662.js"
+    "static/js/main.0ef64b62.js"
   ]
 }
