@@ -16,6 +16,7 @@ import GraphButtons from "../components/graphbuttons";
 import SettingsRadioButtons from "../components/radiosetting";
 import RadioButtonsMetadata from "../structures/radiobuttonsmetadata";
 
+
 const mdTheme = createTheme();
 const paperHeigth = 210;
 const paperVideoHeigth = 270;
@@ -63,8 +64,8 @@ export default function Dashboard() {
     x: data.position_x[target],
     y: data.position_y[target],
     title: "Position of " + Object.keys(data.mapping)[target],
-    xlabel: "X",
-    ylabel: "Y",
+    xlabel: "X [m]",
+    ylabel: "Y [m]",
     legendName: "Position",
     mode: "markers",
     type: "scatter",
@@ -114,25 +115,25 @@ export default function Dashboard() {
       toPlot = data.position_x[target];
       title = "X position of ";
       legendName = "X position";
-      ylabel = "X position";
+      ylabel = "X position [m]";
       break;
     case C.lowerPlottingOptions[1]:
       toPlot = data.position_y[target];
       title = "Y position of";
       legendName = "Y position";
-      ylabel = "Y position";
+      ylabel = "Y Position [m]" ;
       break;
     case C.lowerPlottingOptions[2]:
       toPlot = getValue(data.velocity_x[target], data.velocity_y[target]);
       title = "Velocity of ";
       legendName = "Velocity";
-      ylabel = "Velocity";
+      ylabel = "Velocity [m/s]";
       break;
     default:
       toPlot = getValue(data.velocity_x[target], data.velocity_y[target]);
       title = "Acceleration of ";
       legendName = "Acceleration";
-      ylabel = "Acceleration";
+      ylabel = 'Acceleration [m^2/s]';
       break;
   }
 

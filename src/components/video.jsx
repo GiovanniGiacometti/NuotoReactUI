@@ -8,11 +8,9 @@ export default function Video({ onProg, onDur }) {
       muted
       onProgress={onProg}
       onDuration={onDur}
-      progressInterval={10}
+      progressInterval={0.008}
       width="400px"
       height="230px"
-
-      //real = 256*144
     />
   );
 }
