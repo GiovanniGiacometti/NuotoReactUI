@@ -7,23 +7,39 @@ export default function PlotNuoto({ metaData }) {
 
   var plots = [];
 
-  for (let i = 0; i < metaData.x.length; i++) {
-    var xy = {
-      x: metaData.x,
-      y: metaData.y,
-      name: metaData.legendName,
-      mode: metaData.mode,
-      type: metaData.type,
-      marker: {
-        color: metaData.color,
-        size: 6,
-        colorbar: metaData.colorbar,
-      },
-      showlegend: true,
-    };
+  var xy = {
+    x: metaData.x,
+    y: metaData.y,
+    name: metaData.legendName,
+    mode: metaData.mode,
+    type: metaData.type,
+    marker: {
+      color: metaData.color,
+      size: 6,
+      colorbar: metaData.colorbar,
+    },
+    showlegend: true,
+  };
 
-    plots.push(xy);
-  }
+  plots.push(xy);
+
+  // for (let i = 0; i < metaData.x.length; i++) {
+  //   var xy = {
+  //     x: metaData.x,
+  //     y: metaData.y,
+  //     name: metaData.legendName,
+  //     mode: metaData.mode,
+  //     type: metaData.type,
+  //     marker: {
+  //       color: metaData.color,
+  //       size: 6,
+  //       colorbar: metaData.colorbar,
+  //     },
+  //     showlegend: true,
+  //   };
+
+  //   plots.push(xy);
+  // }
 
   if (
     !isNaN(metaData.x[metaData.frame]) &&

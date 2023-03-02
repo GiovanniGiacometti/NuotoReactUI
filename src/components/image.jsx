@@ -55,7 +55,8 @@ export default function ImageBody({
     ],
   };
   for (let i = 0; i < MAP["areas"].length; i++) {
-    if (targets.includes(i)) {
+    // if (targets.includes(i)) {
+    if (targets === i) {
       MAP["areas"][i]["preFillColor"] = data.colorMapping[i];
       MAP["areas"][i]["disabled"] = true;
     } else {

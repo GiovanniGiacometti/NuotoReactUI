@@ -29,7 +29,7 @@ const initialVectorOption = C.vectorsOptions[0];
 
 export default function Dashboard() {
   //selected target (head, shoulder...)
-  const [target, setTarget] = useState([0]);
+  const [target, setTarget] = useState(0);
 
   //seconds the video is at
   const [seconds, setSeconds] = useState(1);
@@ -49,14 +49,16 @@ export default function Dashboard() {
   const [vectorOption, setVectorOption] = useState(initialVectorOption);
 
   //color of the target selected. Gives the color to the graph if target color is selected.
-  const [selectionColor, setSelectionColor] = useState([data.colorMapping[0]]);
+  const [selectionColor, setSelectionColor] = useState(data.colorMapping[0]);
 
   const [video, setVideo] = useState(C.namesVideo[0]);
 
   //metadata for upper plot
   var metaPlotUp = new PlotMetadata({
-    x: target.map((i) => data.position_x[i]),
-    y: target.map((i) => data.position_x[i]),
+    // x: target.map((i) => data.position_x[i]),
+    // y: target.map((i) => data.position_x[i]),
+    x: data.position_x[target],
+    y: data.position_x[target],
     title: "Position of " + Object.keys(data.mapping)[target],
     xlabel: "X [m]",
     ylabel: "Y [m]",
