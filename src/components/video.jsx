@@ -4,7 +4,7 @@ import React from "react";
 export default function Video({ onProg, onDur, name }) {
   return (
     <ReactPlayer
-      url={"video/" + name + ".mp4"}
+      url={require("../videos/" + name + ".mp4")}
       controls
       muted
       onProgress={onProg}
@@ -13,6 +13,9 @@ export default function Video({ onProg, onDur, name }) {
       width="400px"
       height="230px"
     />
+    // <video width={"400px"} height={"230px"} controls muted>
+    //   <source src={require("../videos/" + name + ".mp4")} type="video/mp4" />
+    // </video>
   );
 }
 

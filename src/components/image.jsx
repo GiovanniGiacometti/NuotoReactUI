@@ -1,5 +1,6 @@
 import ImageMapper from "react-img-mapper";
 import * as data from "../data/data";
+import image from "../images/download.png";
 
 export default function ImageBody({
   targetSelection,
@@ -7,9 +8,9 @@ export default function ImageBody({
   fillColorNotChosen,
   imageWidth,
 }) {
+  console.log("image called, target: " + targets);
   const lineWidth = 5;
   const strokeColor = "black";
-  const URL = "images/download.png";
   var MAP = {
     name: "bodymap",
     areas: [
@@ -55,12 +56,9 @@ export default function ImageBody({
     ],
   };
   for (let i = 0; i < MAP["areas"].length; i++) {
-    // if (targets.includes(i)) {
-    if (targets === i) {
+    if (targets.includes(i)) {
       MAP["areas"][i]["preFillColor"] = data.colorMapping[i];
-      MAP["areas"][i]["disabled"] = true;
     } else {
-      MAP["areas"][i]["active"] = false;
       MAP["areas"][i]["preFillColor"] = fillColorNotChosen;
     }
   }
@@ -69,7 +67,7 @@ export default function ImageBody({
     <ImageMapper
       width={imageWidth}
       imgWidth={221}
-      src={URL}
+      src={image}
       map={MAP}
       onClick={(area) => targetSelection(area.id)}
       stayHighlighted

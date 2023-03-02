@@ -29,7 +29,7 @@ const initialVectorOption = C.vectorsOptions[0];
 
 export default function Dashboard() {
   //selected target (head, shoulder...)
-  const [target, setTarget] = useState(0);
+  const [target, setTarget] = useState([0]);
 
   //seconds the video is at
   const [seconds, setSeconds] = useState(1);
@@ -49,20 +49,17 @@ export default function Dashboard() {
   const [vectorOption, setVectorOption] = useState(initialVectorOption);
 
   //color of the target selected. Gives the color to the graph if target color is selected.
-  const [selectionColor, setSelectionColor] = useState(data.colorMapping[0]);
+  const [selectionColor, setSelectionColor] = useState([data.colorMapping[0]]);
 
   const [video, setVideo] = useState(C.namesVideo[0]);
-
   //metadata for upper plot
   var metaPlotUp = new PlotMetadata({
-    // x: target.map((i) => data.position_x[i]),
-    // y: target.map((i) => data.position_x[i]),
-    x: data.position_x[target],
-    y: data.position_x[target],
-    title: "Position of " + Object.keys(data.mapping)[target],
+    x: target.map((i) => data.position_x[i]),
+    y: target.map((i) => data.position_y[i]),
+    title: "Position",
     xlabel: "X [m]",
     ylabel: "Y [m]",
-    legendName: "Position",
+    legendName: target.map((i) => data.mappingInverse[i]),
     mode: "markers",
     type: "scatter",
     frame: getFrame(seconds, duration),
@@ -90,13 +87,13 @@ export default function Dashboard() {
 
   if (vector === C.vectorsOptions[1]) {
     vector = {
-      dx: data.velocity_x[target],
-      dy: data.velocity_y[target],
+      dx: target.map((i) => data.velocity_x[i]),
+      dy: target.map((i) => data.velocity_y[i]),
     };
   } else if (vector === C.vectorsOptions[2]) {
     vector = {
-      dx: data.velocity_x[target],
-      dy: data.velocity_y[target],
+      dx: target.map((i) => data.velocity_x[i]),
+      dy: target.map((i) => data.velocity_y[i]),
     };
   }
 
@@ -104,46 +101,45 @@ export default function Dashboard() {
 
   let toPlot;
   let title;
-  let legendName;
   let ylabel;
   switch (lowerPlottingOption) {
     case C.lowerPlottingOptions[0]:
-      toPlot = data.position_x[target];
-      title = "X position of ";
-      legendName = "X position";
+      toPlot = target.map((i) => data.position_x[i]);
+      title = "X position";
       ylabel = "X position [m]";
       break;
     case C.lowerPlottingOptions[1]:
-      toPlot = data.position_y[target];
-      title = "Y position of";
-      legendName = "Y position";
+      toPlot = target.map((i) => data.position_y[i]);
+      title = "Y position";
       ylabel = "Y Position [m]";
       break;
     case C.lowerPlottingOptions[2]:
-      toPlot = getValue(data.velocity_x[target], data.velocity_y[target]);
-      title = "Velocity of ";
-      legendName = "Velocity";
+      toPlot = target.map((i) =>
+        getValue(data.velocity_x[i], data.velocity_y[i])
+      );
+      title = "Velocity";
       ylabel = "Velocity [m/s]";
       break;
     default:
-      toPlot = getValue(data.velocity_x[target], data.velocity_y[target]);
-      title = "Acceleration of ";
-      legendName = "Acceleration";
+      toPlot = target.map((i) =>
+        getValue(data.velocity_x[i], data.velocity_y[i])
+      );
+      title = "Acceleration";
       ylabel = "Acceleration [m^2/s]";
       break;
   }
 
   var metaPlotDown = new PlotMetadata({
-    x: [...Array(data.totalFrames).keys()],
+    x: target.map((_) => [...Array(data.totalFrames).keys()]),
     y: toPlot,
-    title: title + Object.keys(data.mapping)[target],
+    title: title,
     xlabel: "Frames",
     ylabel: ylabel,
-    legendName: legendName,
+    legendName: target.map((item, _) => data.mappingInverse[item]),
     mode: "markers",
     type: "scatter",
     frame: getFrame(seconds, duration),
-    color: mdTheme.palette.primary["main"],
+    color: selectionColor,
     vector: C.vectorsOptions[0],
   });
 
@@ -216,6 +212,7 @@ export default function Dashboard() {
   });
 
   const onNewColorSelected = (event) => {
+    if (target.length > 1) return;
     setColorOption(event.target.value);
   };
 
@@ -242,19 +239,13 @@ export default function Dashboard() {
   var updateDuration = (duration) => setDuration(duration);
 
   var targetSelection = (id) => {
-    console.log("clicked " + data.mapping[id]);
     const selectedTarget = data.mapping[id];
-    if (target.includes(selectedTarget)) return;
-    // let newTargets = target;
-    // newTargets.push(selectedTarget);
-    // console.log("new Targets: " + newTargets);
-    // setTarget(newTargets);
-
-    target.push(selectedTarget);
-
-    let newSelectionColors = selectionColor;
-    newSelectionColors.push([data.colorMapping[selectedTarget]]);
-    setSelectionColor(newSelectionColors);
+    if (target.includes(selectedTarget)) {
+      setTarget(target.filter((item) => item !== selectedTarget));
+      return;
+    }
+    setTarget([...target, selectedTarget]);
+    setSelectionColor([...selectionColor, data.colorMapping[selectedTarget]]);
   };
 
   return (

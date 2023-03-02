@@ -23158,6 +23158,26 @@ export const velocity_y = [
   ],
 ];
 
+export const mappingInverse = {
+  0: "Head",
+  1: "RightShoulder",
+  2: "LeftShoulder",
+  3: "RightElbow",
+  4: "LeftElbow",
+  5: "RightWrist",
+  6: "LeftWrist",
+  7: "RightHand",
+  8: "LeftHand",
+  9: "RightHip",
+  10: "LeftHip",
+  11: "RightKnee",
+  12: "LeftKnee",
+  13: "RightAnkle",
+  14: "LeftAnkle",
+  15: "RightFeet",
+  16: "LeftFeet",
+};
+
 export const mapping = {
   Head: 0,
   RightShoulder: 1,
