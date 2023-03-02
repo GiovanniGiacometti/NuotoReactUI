@@ -29,7 +29,7 @@ const initialVectorOption = C.vectorsOptions[0];
 
 export default function Dashboard() {
   //selected target (head, shoulder...)
-  const [target, setTarget] = useState(0);
+  const [target, setTarget] = useState([0]);
 
   //seconds the video is at
   const [seconds, setSeconds] = useState(1);
@@ -49,12 +49,14 @@ export default function Dashboard() {
   const [vectorOption, setVectorOption] = useState(initialVectorOption);
 
   //color of the target selected. Gives the color to the graph if target color is selected.
-  const [selectionColor, setSelectionColor] = useState(data.colorMapping[0]);
+  const [selectionColor, setSelectionColor] = useState([data.colorMapping[0]]);
+
+  const [video, setVideo] = useState(C.namesVideo[0]);
 
   //metadata for upper plot
   var metaPlotUp = new PlotMetadata({
-    x: data.position_x[target],
-    y: data.position_y[target],
+    x: target.map((i) => data.position_x[i]),
+    y: target.map((i) => data.position_x[i]),
     title: "Position of " + Object.keys(data.mapping)[target],
     xlabel: "X [m]",
     ylabel: "Y [m]",
@@ -177,16 +179,38 @@ export default function Dashboard() {
   var functionsUp = [() => {}, () => {}, () => {}];
   const namesUp = ["Trajectory", "KPI", "Radar"];
 
+  var buttonsPlotUp = new ButtonsMetadata({
+    functions: functionsUp,
+    names: namesUp,
+    colors: colorsUp,
+  });
+
   var buttonsPlotDown = new ButtonsMetadata({
     functions: functionsDown,
     names: C.lowerPlottingOptions,
     colors: colorsDown,
   });
 
-  var buttonsPlotUp = new ButtonsMetadata({
-    functions: functionsUp,
-    names: namesUp,
-    colors: colorsUp,
+  var colorsVideo = [
+    video === C.namesVideo[0] ? mdTheme.palette.primary : unSelected,
+    video === C.namesVideo[1] ? mdTheme.palette.primary : unSelected,
+    unSelected,
+  ];
+
+  var functionsVideo = [
+    () => {
+      setVideo(C.namesVideo[0]);
+    },
+    () => {
+      setVideo(C.namesVideo[1]);
+    },
+    () => {},
+  ];
+
+  var buttonsPlotVideo = new ButtonsMetadata({
+    functions: functionsVideo,
+    names: C.namesVideo,
+    colors: colorsVideo,
   });
 
   const onNewColorSelected = (event) => {
@@ -216,10 +240,19 @@ export default function Dashboard() {
   var updateDuration = (duration) => setDuration(duration);
 
   var targetSelection = (id) => {
-    const newTarget = data.mapping[id];
-    if (newTarget === target) return;
-    setTarget(newTarget);
-    setSelectionColor(data.colorMapping[newTarget]);
+    console.log("clicked " + data.mapping[id]);
+    const selectedTarget = data.mapping[id];
+    if (target.includes(selectedTarget)) return;
+    // let newTargets = target;
+    // newTargets.push(selectedTarget);
+    // console.log("new Targets: " + newTargets);
+    // setTarget(newTargets);
+
+    target.push(selectedTarget);
+
+    let newSelectionColors = selectionColor;
+    newSelectionColors.push([data.colorMapping[selectedTarget]]);
+    setSelectionColor(newSelectionColors);
   };
 
   return (
@@ -286,6 +319,7 @@ export default function Dashboard() {
                     display: "flex",
                     flexDirection: "row",
                     height: paperHeigth,
+                    width: 890,
                     justifyContent: "space-between",
                     alignItems: "center",
                   }}
@@ -301,12 +335,17 @@ export default function Dashboard() {
                     display: "flex",
                     flexDirection: "row",
                     height: paperVideoHeigth,
-                    width: 550,
-                    justifyContent: "space-evenly",
+                    width: 890,
+                    justifyContent: "space-between",
                     alignItems: "center",
                   }}
                 >
-                  <Video onProg={updateFrame} onDur={updateDuration} />
+                  <GraphButtons metaData={buttonsPlotVideo} />
+                  <Video
+                    onProg={updateFrame}
+                    onDur={updateDuration}
+                    name={video}
+                  />
                   <Typography>
                     {"Frame : " + getFrame(seconds, duration)}
                   </Typography>
@@ -324,8 +363,7 @@ export default function Dashboard() {
               >
                 <ImageBody
                   targetSelection={targetSelection}
-                  first={target}
-                  fillColorChosen={selectionColor}
+                  targets={target}
                   fillColorNotChosen={unSelected}
                   imageWidth={imageWidth}
                 />
@@ -338,8 +376,8 @@ export default function Dashboard() {
   );
 }
 
-function getFrame(seconds, length) {
-  return Math.ceil((seconds / length) * data.totalFrames);
+function getFrame(seconds, duration) {
+  return Math.ceil((seconds / duration) * data.totalFrames);
 }
 
 function getValue(x, y) {

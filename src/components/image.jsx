@@ -1,6 +1,12 @@
 import ImageMapper from "react-img-mapper";
+import * as data from "../data/data";
 
-export default function ImageBody({ targetSelection, first, fillColorChosen, fillColorNotChosen, imageWidth }) {
+export default function ImageBody({
+  targetSelection,
+  targets,
+  fillColorNotChosen,
+  imageWidth,
+}) {
   const lineWidth = 5;
   const strokeColor = "black";
   const URL = "images/download.png";
@@ -48,10 +54,9 @@ export default function ImageBody({ targetSelection, first, fillColorChosen, fil
       },
     ],
   };
-
   for (let i = 0; i < MAP["areas"].length; i++) {
-    if (i === first) {
-      MAP["areas"][i]["preFillColor"] = fillColorChosen;
+    if (targets.includes(i)) {
+      MAP["areas"][i]["preFillColor"] = data.colorMapping[i];
       MAP["areas"][i]["disabled"] = true;
     } else {
       MAP["areas"][i]["active"] = false;

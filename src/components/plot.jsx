@@ -2,21 +2,28 @@ import Plot from "react-plotly.js";
 import * as C from "../data/constants";
 
 export default function PlotNuoto({ metaData }) {
-  var xy = {
-    x: metaData.x,
-    y: metaData.y,
-    name: metaData.legendName,
-    mode: metaData.mode,
-    type: metaData.type,
-    marker: {
-      color: metaData.color,
-      size: 6,
-      colorbar: metaData.colorbar,
-    },
-    showlegend: true,
-  };
+  console.log("inplot");
+  console.log(metaData.x);
 
-  var plots = [xy];
+  var plots = [];
+
+  for (let i = 0; i < metaData.x.length; i++) {
+    var xy = {
+      x: metaData.x,
+      y: metaData.y,
+      name: metaData.legendName,
+      mode: metaData.mode,
+      type: metaData.type,
+      marker: {
+        color: metaData.color,
+        size: 6,
+        colorbar: metaData.colorbar,
+      },
+      showlegend: true,
+    };
+
+    plots.push(xy);
+  }
 
   if (
     !isNaN(metaData.x[metaData.frame]) &&

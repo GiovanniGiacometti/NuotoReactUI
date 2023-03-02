@@ -5,3 +5,5 @@ export const colorOptions = ["Target color", "Velocity color", "Acceleration col
 
 
 export const lowerPlottingOptions = ["X Position", "Y Position", "Velocity", "Acceleration"]
+
+export const namesVideo = ["lq_video_RoI", "lq_video_target", "lq_video"]
