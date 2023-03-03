@@ -2,8 +2,10 @@ import Plot from "react-plotly.js";
 import * as C from "../data/constants";
 import { useRef } from "react";
 
-export default function PlotNuoto({ metaData, onDrag }) {
+export default function PlotNuoto({ metaData, onDrag, width }) {
   var plots = [];
+
+  let frame = parseInt(metaData.frame);
 
   var minX = C.n;
   var maxX = -C.n;
@@ -29,14 +31,10 @@ export default function PlotNuoto({ metaData, onDrag }) {
     };
 
     plots.push(xy);
-
-    if (
-      !isNaN(metaData.x[i][metaData.frame]) &&
-      !isNaN(metaData.y[i][metaData.frame])
-    ) {
+    if (!isNaN(metaData.x[i][frame]) && !isNaN(metaData.y[i][frame])) {
       var point = {
-        x: [metaData.x[i][metaData.frame]],
-        y: [metaData.y[i][metaData.frame]],
+        x: [metaData.x[i][frame]],
+        y: [metaData.y[i][frame]],
         name: "frame",
         mode: "markers",
         type: "scatter",
@@ -49,18 +47,12 @@ export default function PlotNuoto({ metaData, onDrag }) {
       plots.push(point);
 
       if (metaData.vector !== C.vectorsOptions[0]) {
-        var dx = metaData.vector.dx[i][metaData.frame];
-        var dy = metaData.vector.dy[i][metaData.frame];
+        var dx = metaData.vector.dx[i][frame];
+        var dy = metaData.vector.dy[i][frame];
 
         var line = {
-          x: [
-            metaData.x[i][metaData.frame],
-            metaData.x[i][metaData.frame] + dx,
-          ],
-          y: [
-            metaData.y[i][metaData.frame],
-            metaData.y[i][metaData.frame] + dy,
-          ],
+          x: [metaData.x[i][frame], metaData.x[i][frame] + dx],
+          y: [metaData.y[i][frame], metaData.y[i][frame] + dy],
           mode: "lines",
           line: {
             width: 2,
@@ -77,8 +69,8 @@ export default function PlotNuoto({ metaData, onDrag }) {
         else if (dx < 0 && dy < 0) angle += 180;
 
         var arrow = {
-          x: [metaData.x[i][metaData.frame] + dx],
-          y: [metaData.y[i][metaData.frame] + dy],
+          x: [metaData.x[i][frame] + dx],
+          y: [metaData.y[i][frame] + dy],
           mode: "markers",
           marker: {
             symbol: "triangle-right",
@@ -115,7 +107,7 @@ export default function PlotNuoto({ metaData, onDrag }) {
   }
 
   var layout = {
-    title: metaData.title,
+    // title: metaData.title,
     dragmode: "lasso",
     xaxis: {
       range: [minX - offsetX, maxX + offsetX],
@@ -135,12 +127,24 @@ export default function PlotNuoto({ metaData, onDrag }) {
       family: "Arial",
       size: 12,
     },
-    height: 200,
-    width: 750,
+    height: 205,
+    width: width,
+    autosize: false,
     margin: {
-      r: 10,
+      r: 70,
       b: 30,
-      t: 40,
+      t: 10,
+    },
+    legend: {
+      x: 0.95,
+      y: 1,
+      traceorder: "normal",
+      font: {
+        family: "Arial",
+        size: 12,
+        color: "#000",
+      },
+      bgcolor: "#FFFFFF",
     },
   };
 

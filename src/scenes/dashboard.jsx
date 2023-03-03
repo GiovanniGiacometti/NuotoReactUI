@@ -8,20 +8,20 @@ import * as C from "../data/constants";
 import PlotNuoto from "../components/plot";
 import PlotMetadata from "../structures/plotmetadata";
 import ButtonsMetadata from "../structures/buttonsmetadata";
-import { Typography } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import GraphButtons from "../components/graphbuttons";
 import SettingsRadioButtons from "../components/radiosetting";
-import ProgressBar from "../components/progressbar";
 import RadioButtonsMetadata from "../structures/radiobuttonsmetadata";
-import { Button } from "@mui/material";
 
 const mdTheme = createTheme();
 const paperHeigth = 210;
 const paperVideoHeigth = 270;
 const imageWidth = 190;
+const paperImageWidth = imageWidth + 16;
+const paperWidth = 1100;
+const paperWidthUp = paperWidth + paperImageWidth + 100;
 
 //color when a button is unselected.
 const unSelected = mdTheme.palette.grey[400];
@@ -29,13 +29,13 @@ const unSelected = mdTheme.palette.grey[400];
 const initialColorOption = C.colorOptions[0];
 const initialVectorOption = C.vectorsOptions[0];
 
-const MS_PER_FRAME = 30;
+// const MS_PER_FRAME = 30;
 
 export default function Dashboard() {
   //selected target (head, shoulder...)
   const [target, setTarget] = useState([0]);
 
-  const [frame, setFrame] = useState(0);
+  const [frame, setFrame] = useState(1);
 
   const [playing, setPlaying] = useState(false);
 
@@ -85,16 +85,18 @@ export default function Dashboard() {
 
   var colorBarUp = {};
 
-  if (colorOption === C.colorOptions[1]) {
-    colorUp = getValue(data.velocity_x[target], data.velocity_y[target]);
-    colorBarUp["title"] = "Velocity";
-    addColorBarAttr(colorBarUp);
-    metaPlotUp.setColorBar(colorBarUp);
-  } else if (colorOption === C.colorOptions[2]) {
-    colorUp = getValue(data.velocity_x[target], data.velocity_y[target]);
-    colorBarUp["title"] = "Acceleration";
-    addColorBarAttr(colorBarUp);
-    metaPlotUp.setColorBar(colorBarUp);
+  if (target.length < 2) {
+    if (colorOption === C.colorOptions[1]) {
+      colorUp = getValue(data.velocity_x[target], data.velocity_y[target]);
+      colorBarUp["title"] = "Velocity";
+      addColorBarAttr(colorBarUp);
+      metaPlotUp.setColorBar(colorBarUp);
+    } else if (colorOption === C.colorOptions[2]) {
+      colorUp = getValue(data.velocity_x[target], data.velocity_y[target]);
+      colorBarUp["title"] = "Acceleration";
+      addColorBarAttr(colorBarUp);
+      metaPlotUp.setColorBar(colorBarUp);
+    }
   }
 
   metaPlotUp.setColor(colorUp);
@@ -114,7 +116,6 @@ export default function Dashboard() {
   }
 
   metaPlotUp.setVector(vector);
-
   let toPlot;
   let title;
   let ylabel;
@@ -228,8 +229,7 @@ export default function Dashboard() {
   });
 
   const onNewColorSelected = (event) => {
-    if (target.length > 1) return;
-    setColorOption(event.target.value);
+    if (target.length === 1) setColorOption(event.target.value);
   };
 
   const onNewVectorSelected = (event) => {
@@ -239,7 +239,7 @@ export default function Dashboard() {
   var metaRadioSettingsColor = new RadioButtonsMetadata({
     name: C.colorLabel,
     values: C.colorOptions,
-    initialValue: colorOption,
+    initialValue: target.length > 1 ? C.colorOptions[0] : colorOption,
     onChange: onNewColorSelected,
   });
 
@@ -249,149 +249,157 @@ export default function Dashboard() {
     initialValue: vectorOption,
     onChange: onNewVectorSelected,
   });
-  var updateDuration = (duration) => {};
 
   var targetSelection = (id) => {
     const selectedTarget = data.mapping[id];
     if (target.includes(selectedTarget)) {
-      setTarget(target.filter((item) => item !== selectedTarget));
+      let newTargets = target.filter((item) => item !== selectedTarget);
+      setTarget(newTargets);
+      if (newTargets.length === 1) {
+        setColorOption(C.colorOptions[0]);
+      }
       return;
     }
     setTarget([...target, selectedTarget]);
   };
 
   const onPlay = () => {
-    setPlaying(true);
+    setPlaying(!playing);
   };
 
-  const onPause = () => {
-    setPlaying(false);
-  };
   var onDrag = (area) => {};
 
   return (
     <Box
       component="main"
       sx={{
-        backgroundColor: (theme) =>
-          theme.palette.mode === "light"
-            ? theme.palette.grey[100]
-            : theme.palette.grey[900],
+        backgroundColor: mdTheme.palette.grey[100],
         flexGrow: 1,
         height: "100vh",
         overflow: "auto",
       }}
     >
-      <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
-        <Grid container rowSpacing={1} columnSpacing={3}>
-          <Grid item xs={12} md={12} lg={12}>
-            <Paper
-              sx={{
-                p: 1,
-                display: "flex",
-                flexDirection: "row",
-                height: paperHeigth,
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <GraphButtons metaData={buttonsPlotUp} />
-              <PlotNuoto metaData={metaPlotUp} onDrag={onDrag} />
-              <SettingsRadioButtons metaData={metaRadioSettingsColor} />
-              <SettingsRadioButtons metaData={metaRadioSettingsVectors} />
-            </Paper>
-          </Grid>
+      <Grid
+        container
+        rowSpacing={1}
+        sx={{
+          margin: "0 auto",
+          mt: 6,
+          width: "90vw",
+        }}
+      >
+        <Grid item xs={12} md={12} lg={12}>
+          <Paper
+            sx={{
+              pl: 1,
+              pr: 1,
+              display: "flex",
+              flexDirection: "row",
+              height: paperHeigth,
+              width: paperWidthUp,
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <GraphButtons metaData={buttonsPlotUp} />
+            <PlotNuoto metaData={metaPlotUp} onDrag={onDrag} width={1000} />
+            <SettingsRadioButtons metaData={metaRadioSettingsColor} />
+            <SettingsRadioButtons metaData={metaRadioSettingsVectors} />
+          </Paper>
+        </Grid>
 
+        <Grid
+          item
+          container
+          xs={12}
+          md={12}
+          lg={12}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+        >
           <Grid
             item
             container
             xs={12}
             md={12}
-            lg={12}
-            direction="row"
+            lg={"auto"}
+            direction="column"
             justifyContent="space-between"
-            alignItems="flex-start"
+            alignItems="center"
             rowSpacing={1}
             columnSpacing={1}
+            sx={{
+              width: paperWidth,
+            }}
           >
-            <Grid
-              item
-              container
-              xs={12}
-              md={12}
-              lg={9}
-              direction="column"
-              justifyContent="space-between"
-              alignItems="center"
-              rowSpacing={1}
-              columnSpacing={1}
-            >
-              <Grid item xs={12} md={12} lg={12}>
-                <Paper
-                  sx={{
-                    p: 1,
-                    display: "flex",
-                    flexDirection: "row",
-                    height: paperHeigth,
-                    width: 890,
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <GraphButtons metaData={buttonsPlotDown} />
-                  <PlotNuoto metaData={metaPlotDown} onDrag={onDrag} />
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={12} lg={12}>
-                <Paper
-                  sx={{
-                    p: 1,
-                    display: "flex",
-                    flexDirection: "row",
-                    height: paperVideoHeigth,
-                    width: 890,
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <GraphButtons metaData={buttonsPlotVideo} />
-
-                  <Video
-                    onDur={updateDuration}
-                    name={video}
-                    frame={frame}
-                    onProgressDrag={(event) => {
-                      setFrame(parseInt(event.target.value));
-                    }}
-                    onPlay={onPlay}
-                    onPause={onPause}
-                    totalFrames={data.totalFrames}
-                  ></Video>
-
-                  <Typography>{"Frame : " + frame}</Typography>
-                </Paper>
-              </Grid>
-            </Grid>
-            <Grid item xs={12} md={12} lg={2.2}>
+            <Grid item xs={12} md={12} lg={12}>
               <Paper
                 sx={{
                   p: 1,
                   display: "flex",
-                  flexDirection: "column",
-                  width: imageWidth + 16,
+                  flexDirection: "row",
+                  height: paperHeigth,
+                  width: paperWidth,
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                <ImageBody
-                  targetSelection={targetSelection}
-                  targets={target}
-                  fillColorNotChosen={unSelected}
-                  imageWidth={imageWidth}
+                <GraphButtons metaData={buttonsPlotDown} />
+                <PlotNuoto
+                  metaData={metaPlotDown}
+                  onDrag={onDrag}
+                  width={960}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <Paper
+                sx={{
+                  p: 1,
+                  display: "flex",
+                  flexDirection: "row",
+                  height: paperVideoHeigth,
+                  width: paperWidth,
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                }}
+              >
+                <GraphButtons metaData={buttonsPlotVideo} />
+
+                <Video
+                  name={video}
+                  frame={frame}
+                  onProgressDrag={(event) => {
+                    let newValue;
+                    if (event.target.value === 0) newValue = 1;
+                    else newValue = parseInt(event.target.value);
+                    setFrame(newValue);
+                  }}
+                  onPlay={onPlay}
+                  totalFrames={data.totalFrames}
+                  playing={playing}
                 />
               </Paper>
             </Grid>
           </Grid>
+          <Grid item xs={12} md={12} lg={1.59}>
+            <Paper
+              sx={{
+                p: 1,
+                width: paperImageWidth,
+              }}
+            >
+              <ImageBody
+                targetSelection={targetSelection}
+                targets={target}
+                fillColorNotChosen={unSelected}
+                imageWidth={imageWidth}
+              />
+            </Paper>
+          </Grid>
         </Grid>
-      </Container>
+      </Grid>
     </Box>
   );
 }
