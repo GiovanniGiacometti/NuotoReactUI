@@ -2,13 +2,13 @@ import ImageMapper from "react-img-mapper";
 import * as data from "../data/data";
 import image from "../images/download.png";
 
+
 export default function ImageBody({
   targetSelection,
   targets,
   fillColorNotChosen,
   imageWidth,
 }) {
-  console.log("image called, target: " + targets);
   const lineWidth = 5;
   const strokeColor = "black";
   var MAP = {

@@ -1,7 +1,8 @@
 import Plot from "react-plotly.js";
 import * as C from "../data/constants";
+import { useRef } from "react";
 
-export default function PlotNuoto({ metaData }) {
+export default function PlotNuoto({ metaData, onDrag }) {
   var plots = [];
 
   var minX = C.n;
@@ -106,8 +107,16 @@ export default function PlotNuoto({ metaData }) {
   let offsetX = (maxX - minX) / 10;
   let offsetY = (maxY - minY) / 10;
 
+  if (metaData.x.length === 0) {
+    minX *= -1;
+    maxX *= -1;
+    minY *= -1;
+    maxY *= -1;
+  }
+
   var layout = {
     title: metaData.title,
+    dragmode: "lasso",
     xaxis: {
       range: [minX - offsetX, maxX + offsetX],
       title: {
@@ -134,11 +143,22 @@ export default function PlotNuoto({ metaData }) {
       t: 40,
     },
   };
+
+  const plotlyRef = useRef(null);
   return (
     <Plot
+      ref={plotlyRef}
       data={plots}
       layout={layout}
       config={{ displayModeBar: false }}
+      onSelected={(area) => {
+        const plotlyNode = plotlyRef.current;
+        console.log(area);
+        if (plotlyNode) {
+        }
+        onDrag();
+      }}
+      onDoubleClick={() => {}}
     ></Plot>
   );
 }

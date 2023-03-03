@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Video from "../components/video";
 import ImageBody from "../components/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as data from "../data/data";
 import * as C from "../data/constants";
 import PlotNuoto from "../components/plot";
@@ -14,7 +14,9 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import GraphButtons from "../components/graphbuttons";
 import SettingsRadioButtons from "../components/radiosetting";
+import ProgressBar from "../components/progressbar";
 import RadioButtonsMetadata from "../structures/radiobuttonsmetadata";
+import { Button } from "@mui/material";
 
 const mdTheme = createTheme();
 const paperHeigth = 210;
@@ -27,15 +29,15 @@ const unSelected = mdTheme.palette.grey[400];
 const initialColorOption = C.colorOptions[0];
 const initialVectorOption = C.vectorsOptions[0];
 
+const MS_PER_FRAME = 30;
+
 export default function Dashboard() {
   //selected target (head, shoulder...)
   const [target, setTarget] = useState([0]);
 
-  //seconds the video is at
-  const [seconds, setSeconds] = useState(1);
+  const [frame, setFrame] = useState(0);
 
-  //duration of the video, it's updated once the video is loaded
-  const [duration, setDuration] = useState(0);
+  const [playing, setPlaying] = useState(false);
 
   //option for lower plot: what are we plotting?
   const [lowerPlottingOption, setLowerPlottingOption] = useState(
@@ -48,11 +50,25 @@ export default function Dashboard() {
   //option for upper plot: what vector are we plotting?
   const [vectorOption, setVectorOption] = useState(initialVectorOption);
 
-  //color of the target selected. Gives the color to the graph if target color is selected.
-  const [selectionColor, setSelectionColor] = useState([data.colorMapping[0]]);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    timerRef.current = setTimeout(() => {
+      if (playing) {
+        if (frame > data.totalFrames) {
+          setPlaying(false);
+          return;
+        }
+        setFrame(frame + 1);
+      }
+    }, 10);
+
+    return () => {
+      clearTimeout(timerRef.current);
+    };
+  }, [frame, playing]);
 
   const [video, setVideo] = useState(C.namesVideo[0]);
-  //metadata for upper plot
   var metaPlotUp = new PlotMetadata({
     x: target.map((i) => data.position_x[i]),
     y: target.map((i) => data.position_y[i]),
@@ -62,10 +78,10 @@ export default function Dashboard() {
     legendName: target.map((i) => data.mappingInverse[i]),
     mode: "markers",
     type: "scatter",
-    frame: getFrame(seconds, duration),
+    frame: frame,
   });
 
-  var colorUp = selectionColor;
+  var colorUp = target.map((i) => data.colorMapping[i]);
 
   var colorBarUp = {};
 
@@ -138,8 +154,8 @@ export default function Dashboard() {
     legendName: target.map((item, _) => data.mappingInverse[item]),
     mode: "markers",
     type: "scatter",
-    frame: getFrame(seconds, duration),
-    color: selectionColor,
+    frame: frame,
+    color: target.map((i) => data.colorMapping[i]),
     vector: C.vectorsOptions[0],
   });
 
@@ -233,10 +249,7 @@ export default function Dashboard() {
     initialValue: vectorOption,
     onChange: onNewVectorSelected,
   });
-
-  var updateFrame = (progress) => setSeconds(progress.playedSeconds);
-
-  var updateDuration = (duration) => setDuration(duration);
+  var updateDuration = (duration) => {};
 
   var targetSelection = (id) => {
     const selectedTarget = data.mapping[id];
@@ -245,8 +258,16 @@ export default function Dashboard() {
       return;
     }
     setTarget([...target, selectedTarget]);
-    setSelectionColor([...selectionColor, data.colorMapping[selectedTarget]]);
   };
+
+  const onPlay = () => {
+    setPlaying(true);
+  };
+
+  const onPause = () => {
+    setPlaying(false);
+  };
+  var onDrag = (area) => {};
 
   return (
     <Box
@@ -275,7 +296,7 @@ export default function Dashboard() {
               }}
             >
               <GraphButtons metaData={buttonsPlotUp} />
-              <PlotNuoto metaData={metaPlotUp} />
+              <PlotNuoto metaData={metaPlotUp} onDrag={onDrag} />
               <SettingsRadioButtons metaData={metaRadioSettingsColor} />
               <SettingsRadioButtons metaData={metaRadioSettingsVectors} />
             </Paper>
@@ -318,7 +339,7 @@ export default function Dashboard() {
                   }}
                 >
                   <GraphButtons metaData={buttonsPlotDown} />
-                  <PlotNuoto metaData={metaPlotDown} />
+                  <PlotNuoto metaData={metaPlotDown} onDrag={onDrag} />
                 </Paper>
               </Grid>
               <Grid item xs={12} md={12} lg={12}>
@@ -334,14 +355,20 @@ export default function Dashboard() {
                   }}
                 >
                   <GraphButtons metaData={buttonsPlotVideo} />
+
                   <Video
-                    onProg={updateFrame}
                     onDur={updateDuration}
                     name={video}
-                  />
-                  <Typography>
-                    {"Frame : " + getFrame(seconds, duration)}
-                  </Typography>
+                    frame={frame}
+                    onProgressDrag={(event) => {
+                      setFrame(parseInt(event.target.value));
+                    }}
+                    onPlay={onPlay}
+                    onPause={onPause}
+                    totalFrames={data.totalFrames}
+                  ></Video>
+
+                  <Typography>{"Frame : " + frame}</Typography>
                 </Paper>
               </Grid>
             </Grid>
@@ -367,10 +394,6 @@ export default function Dashboard() {
       </Container>
     </Box>
   );
-}
-
-function getFrame(seconds, duration) {
-  return Math.ceil((seconds / duration) * data.totalFrames);
 }
 
 function getValue(x, y) {
