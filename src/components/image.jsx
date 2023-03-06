@@ -1,14 +1,9 @@
 import ImageMapper from "react-img-mapper";
 import * as data from "../data/data";
 import image from "../images/download.png";
+import { memo } from "react";
 
-
-export default function ImageBody({
-  targetSelection,
-  targets,
-  fillColorNotChosen,
-  imageWidth,
-}) {
+function IB({ targetSelection, targets, fillColorNotChosen, imageWidth }) {
   const lineWidth = 5;
   const strokeColor = "black";
   var MAP = {
@@ -76,3 +71,18 @@ export default function ImageBody({
     />
   );
 }
+
+function arePropsEqual(prevProps, nextProps) {
+  let t1 = prevProps.targets.sort();
+  let t2 = nextProps.targets.sort();
+  if (t1.length !== t2.length) return false;
+  for (let i = 0; i < t1.length; i++) {
+    if (t1[i] !== t2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+const ImageBody = memo(IB, arePropsEqual);
+export default ImageBody;

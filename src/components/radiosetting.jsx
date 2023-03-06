@@ -3,8 +3,9 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
+import { memo } from "react";
 
-export default function SettingsRadioButtons({ metaData }) {
+function SRB({ metaData }) {
   return (
     <FormControl>
       <FormLabel id="demo-controlled-radio-buttons-group">
@@ -28,3 +29,10 @@ export default function SettingsRadioButtons({ metaData }) {
     </FormControl>
   );
 }
+
+function arePropsEqual(prevProps, nextProps) {
+  return prevProps.metaData.isEqual(nextProps.metaData);
+}
+
+const SettingsRadioButtons = memo(SRB, arePropsEqual);
+export default SettingsRadioButtons;

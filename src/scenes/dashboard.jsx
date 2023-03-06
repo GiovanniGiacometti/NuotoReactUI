@@ -2,14 +2,13 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Video from "../components/video";
 import ImageBody from "../components/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import * as data from "../data/data";
 import * as C from "../data/constants";
 import PlotNuoto from "../components/plot";
 import PlotMetadata from "../structures/plotmetadata";
 import ButtonsMetadata from "../structures/buttonsmetadata";
 import { createTheme } from "@mui/material/styles";
-import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import GraphButtons from "../components/graphbuttons";
 import SettingsRadioButtons from "../components/radiosetting";
@@ -29,7 +28,7 @@ const unSelected = mdTheme.palette.grey[400];
 const initialColorOption = C.colorOptions[0];
 const initialVectorOption = C.vectorsOptions[0];
 
-// const MS_PER_FRAME = 30;
+const MS_PER_FRAME = 100;
 
 export default function Dashboard() {
   //selected target (head, shoulder...)
@@ -57,11 +56,12 @@ export default function Dashboard() {
       if (playing) {
         if (frame > data.totalFrames) {
           setPlaying(false);
+          setFrame(0);
           return;
         }
         setFrame(frame + 1);
       }
-    }, 10);
+    }, MS_PER_FRAME);
 
     return () => {
       clearTimeout(timerRef.current);
@@ -69,30 +69,66 @@ export default function Dashboard() {
   }, [frame, playing]);
 
   const [video, setVideo] = useState(C.namesVideo[0]);
+
+  const positions_x = useMemo(() => {
+    return target.map((i) => data.position_x[i]);
+  }, [target]);
+
+  const positions_y = useMemo(() => {
+    return target.map((i) => data.position_y[i]);
+  }, [target]);
+
+  const legendNames = useMemo(() => {
+    return target.map((i) => data.mappingInverse[i]);
+  }, [target]);
+
   var metaPlotUp = new PlotMetadata({
-    x: target.map((i) => data.position_x[i]),
-    y: target.map((i) => data.position_y[i]),
+    x: positions_x,
+    y: positions_y,
     title: "Position",
     xlabel: "X [m]",
     ylabel: "Y [m]",
-    legendName: target.map((i) => data.mappingInverse[i]),
+    legendName: legendNames,
     mode: "markers",
     type: "scatter",
     frame: frame,
   });
 
-  var colorUp = target.map((i) => data.colorMapping[i]);
+  var colorUp = useMemo(() => {
+    return target.map((i) => data.colorMapping[i]);
+  }, [target]);
+
+  var velocity = useMemo(() => {
+    return [getValue(data.velocity_x[target[0]], data.velocity_y[target[0]])];
+  }, [target]);
+
+  var velocity_x = useMemo(() => {
+    return target.map((i) => data.velocity_x[i]);
+  }, [target]);
+
+  var velocity_y = useMemo(() => {
+    return target.map((i) => data.velocity_y[i]);
+  }, [target]);
+
+  var acceleration = useMemo(() => {
+    console.log(target, target[0]);
+    return [getValue(data.velocity_x[target[0]], data.velocity_y[target[0]])];
+  }, [target]);
+
+  let frames = useMemo(() => {
+    return target.map((_) => [...Array(data.totalFrames).keys()]);
+  }, [target]);
 
   var colorBarUp = {};
 
   if (target.length < 2) {
     if (colorOption === C.colorOptions[1]) {
-      colorUp = getValue(data.velocity_x[target], data.velocity_y[target]);
+      colorUp = velocity;
       colorBarUp["title"] = "Velocity";
       addColorBarAttr(colorBarUp);
       metaPlotUp.setColorBar(colorBarUp);
     } else if (colorOption === C.colorOptions[2]) {
-      colorUp = getValue(data.velocity_x[target], data.velocity_y[target]);
+      colorUp = acceleration;
       colorBarUp["title"] = "Acceleration";
       addColorBarAttr(colorBarUp);
       metaPlotUp.setColorBar(colorBarUp);
@@ -105,13 +141,13 @@ export default function Dashboard() {
 
   if (vector === C.vectorsOptions[1]) {
     vector = {
-      dx: target.map((i) => data.velocity_x[i]),
-      dy: target.map((i) => data.velocity_y[i]),
+      dx: velocity_x,
+      dy: velocity_y,
     };
   } else if (vector === C.vectorsOptions[2]) {
     vector = {
-      dx: target.map((i) => data.velocity_x[i]),
-      dy: target.map((i) => data.velocity_y[i]),
+      dx: velocity_x,
+      dy: velocity_y,
     };
   }
 
@@ -121,42 +157,38 @@ export default function Dashboard() {
   let ylabel;
   switch (lowerPlottingOption) {
     case C.lowerPlottingOptions[0]:
-      toPlot = target.map((i) => data.position_x[i]);
+      toPlot = positions_x;
       title = "X position";
       ylabel = "X position [m]";
       break;
     case C.lowerPlottingOptions[1]:
-      toPlot = target.map((i) => data.position_y[i]);
+      toPlot = positions_y;
       title = "Y position";
       ylabel = "Y Position [m]";
       break;
     case C.lowerPlottingOptions[2]:
-      toPlot = target.map((i) =>
-        getValue(data.velocity_x[i], data.velocity_y[i])
-      );
+      toPlot = velocity;
       title = "Velocity";
       ylabel = "Velocity [m/s]";
       break;
     default:
-      toPlot = target.map((i) =>
-        getValue(data.velocity_x[i], data.velocity_y[i])
-      );
+      toPlot = acceleration;
       title = "Acceleration";
       ylabel = "Acceleration [m^2/s]";
       break;
   }
 
   var metaPlotDown = new PlotMetadata({
-    x: target.map((_) => [...Array(data.totalFrames).keys()]),
+    x: frames,
     y: toPlot,
     title: title,
     xlabel: "Frames",
     ylabel: ylabel,
-    legendName: target.map((item, _) => data.mappingInverse[item]),
+    legendName: legendNames,
     mode: "markers",
     type: "scatter",
     frame: frame,
-    color: target.map((i) => data.colorMapping[i]),
+    color: colorUp,
     vector: C.vectorsOptions[0],
   });
 
@@ -177,20 +209,20 @@ export default function Dashboard() {
 
   var colorsDown = [
     lowerPlottingOption === C.lowerPlottingOptions[0]
-      ? mdTheme.palette.primary
+      ? mdTheme.palette.primary.light
       : unSelected,
     lowerPlottingOption === C.lowerPlottingOptions[1]
-      ? mdTheme.palette.primary
+      ? mdTheme.palette.primary.light
       : unSelected,
     lowerPlottingOption === C.lowerPlottingOptions[2]
-      ? mdTheme.palette.primary
+      ? mdTheme.palette.primary.light
       : unSelected,
     lowerPlottingOption === C.lowerPlottingOptions[3]
-      ? mdTheme.palette.primary
+      ? mdTheme.palette.primary.light
       : unSelected,
   ];
 
-  var colorsUp = [mdTheme.palette.primary, unSelected, unSelected];
+  var colorsUp = [mdTheme.palette.primary.light, unSelected, unSelected];
   var functionsUp = [() => {}, () => {}, () => {}];
   const namesUp = ["Trajectory", "KPI", "Radar"];
 
@@ -207,8 +239,8 @@ export default function Dashboard() {
   });
 
   var colorsVideo = [
-    video === C.namesVideo[0] ? mdTheme.palette.primary : unSelected,
-    video === C.namesVideo[1] ? mdTheme.palette.primary : unSelected,
+    video === C.namesVideo[0] ? mdTheme.palette.primary.light : unSelected,
+    video === C.namesVideo[1] ? mdTheme.palette.primary.light : unSelected,
     unSelected,
   ];
 
