@@ -15,5 +15,6 @@ export const lowerPlottingOptions = [
 ];
 
 export const namesVideo = ["lq_video_RoI", "lq_video_target", "lq_video"];
+export const videoLabel = "Video";
 
 export const n = 200;

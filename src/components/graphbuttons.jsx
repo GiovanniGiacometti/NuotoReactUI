@@ -14,7 +14,7 @@ function GB({ metaData }) {
           key={i + metaData.names[i]}
           onClick={f}
           size={"small"}
-          sx={{ backgroundColor: metaData.colors[i] }}
+          sx={{ backgroundColor: metaData.colors[i] , fontSize: "11px" }}
         >
           {metaData.names[i]}
         </Button>

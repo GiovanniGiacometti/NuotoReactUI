@@ -1,8 +1,8 @@
 import Plot from "react-plotly.js";
 import * as C from "../data/constants";
-import { useRef } from "react";
+import { useRef, memo } from "react";
 
-export default function PlotNuoto({ metaData, onDrag, width }) {
+function PN({ metaData, onDrag, width, height }) {
   var plots = [];
 
   let frame = parseInt(metaData.frame);
@@ -20,10 +20,7 @@ export default function PlotNuoto({ metaData, onDrag, width }) {
       mode: metaData.mode,
       type: metaData.type,
       marker: {
-        color:
-          typeof metaData.color[i] === "string"
-            ? metaData.color[i]
-            : metaData.color,
+        color: metaData.color[i],
         size: 6,
         colorbar: metaData.colorbar,
       },
@@ -31,6 +28,7 @@ export default function PlotNuoto({ metaData, onDrag, width }) {
     };
 
     plots.push(xy);
+
     if (!isNaN(metaData.x[i][frame]) && !isNaN(metaData.y[i][frame])) {
       var point = {
         x: [metaData.x[i][frame]],
@@ -96,8 +94,8 @@ export default function PlotNuoto({ metaData, onDrag, width }) {
     maxY = Math.max(...yFiltered) > maxY ? Math.max(...yFiltered) : maxY;
   }
 
-  let offsetX = (maxX - minX) / 10;
-  let offsetY = (maxY - minY) / 10;
+  let offsetX = (maxX - minX) / 15;
+  let offsetY = (maxY - minY) / 15;
 
   if (metaData.x.length === 0) {
     minX *= -1;
@@ -127,7 +125,7 @@ export default function PlotNuoto({ metaData, onDrag, width }) {
       family: "Arial",
       size: 12,
     },
-    height: 205,
+    height: height,
     width: width,
     autosize: false,
     margin: {
@@ -166,3 +164,6 @@ export default function PlotNuoto({ metaData, onDrag, width }) {
     ></Plot>
   );
 }
+
+const PlotNuoto = memo(PN);
+export default PlotNuoto;

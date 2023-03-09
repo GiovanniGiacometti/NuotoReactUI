@@ -1,23 +1,13 @@
-import * as React from 'react';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import * as React from "react";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 
-export const mainListItems = (
-  <React.Fragment>
-    <ListItemButton>
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <ListItemText primary="Dashboard" />
+export default function ListItems({ metaData }) {
+  return metaData.functions.map((f, i) => (
+    <ListItemButton onClick={f} key={metaData.names[i]}>
+      <ListItemIcon sx={{color: metaData.colors[i]}}>{metaData.icon[i]}</ListItemIcon>
+      <ListItemText primary={metaData.names[i]} />
     </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <CompareArrowsIcon />
-      </ListItemIcon>
-      <ListItemText primary="Compare" />
-    </ListItemButton>
-  </React.Fragment>
-);
+  ));
+}

@@ -11,8 +11,12 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { mainListItems } from "../components/listItems";
+import ListItems from "../components/listItems";
 import Dashboard from "./dashboard";
+import DashboardNew from "./dashboardNew";
+import ListItemMetadata from "../structures/listitemmetadata";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 
 const mdTheme = createTheme();
 const drawerWidth = 200;
@@ -61,12 +65,57 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
+const names = ["DASHBOARD1", "DASHBOARDNEW", "COMPARE"];
+const icons = [<DashboardIcon />, <DashboardIcon />, <CompareArrowsIcon />];
+const colorInit = [
+  mdTheme.palette.primary.light,
+  mdTheme.palette.grey[400],
+  mdTheme.palette.grey[400],
+];
+
 export default function Background() {
   const [open, setOpen] = useState(false);
+  const [option, setOption] = useState(names[0]);
+  const [colors, setColors] = useState(colorInit);
+
+  var functions = [
+    () => {
+      setOption(names[0]);
+      setColors(colorInit);
+    },
+    () => {
+      setOption(names[1]);
+      setColors([
+        mdTheme.palette.grey[400],
+        mdTheme.palette.primary.light,
+        mdTheme.palette.grey[400],
+      ]);
+    },
+    () => {
+      setOption(names[2]);
+      setColors([
+        mdTheme.palette.grey[400],
+        mdTheme.palette.grey[400],
+        mdTheme.palette.primary.light,
+      ]);
+    },
+  ];
+
+  let listItemMetadata = new ListItemMetadata({
+    functions: functions,
+    names: names,
+    icons: icons,
+    colors: colors,
+  });
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  let ret;
+  if (option === names[0]) ret = <Dashboard />;
+  if (option === names[1]) ret = <DashboardNew />;
+  if (option === names[2]) ret = <></>;
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -104,7 +153,7 @@ export default function Background() {
         </AppBar>
         <Drawer variant="permanent" open={open}>
           <Toolbar
-          variant="dense"
+            variant="dense"
             sx={{
               display: "flex",
               alignItems: "center",
@@ -117,9 +166,11 @@ export default function Background() {
             </IconButton>
           </Toolbar>
           <Divider />
-          <List component="nav">{mainListItems}</List>
+          <List component="nav">
+            <ListItems metaData={listItemMetadata} />
+          </List>
         </Drawer>
-        <Dashboard />
+        {ret}
       </Box>
     </ThemeProvider>
   );

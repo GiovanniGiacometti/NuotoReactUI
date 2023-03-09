@@ -12,15 +12,21 @@ import { createTheme } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import GraphButtons from "../components/graphbuttons";
 import SettingsRadioButtons from "../components/radiosetting";
+import DropDownSelection from "../components/dropdownSelection";
 import RadioButtonsMetadata from "../structures/radiobuttonsmetadata";
+import DropDownMetadata from "../structures/dropdownmetadata";
 
 const mdTheme = createTheme();
-const paperHeigth = 210;
-const paperVideoHeigth = 270;
-const imageWidth = 190;
-const paperImageWidth = imageWidth + 16;
-const paperWidth = 1100;
-const paperWidthUp = paperWidth + paperImageWidth + 100;
+
+const paperUpHeight = 310;
+const paperDownHeight = 330;
+const paperWidth = 1400;
+
+// const paperVideoHeigth = 270;
+// const imageWidth = 190;
+// const paperImageWidth = imageWidth + 16;
+// const paperWidth = 1100;
+// const paperWidthUp = paperWidth + paperImageWidth + 100;
 
 //color when a button is unselected.
 const unSelected = mdTheme.palette.grey[400];
@@ -30,7 +36,7 @@ const initialVectorOption = C.vectorsOptions[0];
 
 const MS_PER_FRAME = 100;
 
-export default function Dashboard() {
+export default function DashboardNew() {
   //selected target (head, shoulder...)
   const [target, setTarget] = useState([0]);
 
@@ -49,8 +55,9 @@ export default function Dashboard() {
   //option for upper plot: what vector are we plotting?
   const [vectorOption, setVectorOption] = useState(initialVectorOption);
 
-  const timerRef = useRef(null);
+  const [video, setVideo] = useState(C.namesVideo[0]);
 
+  const timerRef = useRef(null);
   useEffect(() => {
     timerRef.current = setTimeout(() => {
       if (playing) {
@@ -67,8 +74,6 @@ export default function Dashboard() {
       clearTimeout(timerRef.current);
     };
   }, [frame, playing]);
-
-  const [video, setVideo] = useState(C.namesVideo[0]);
 
   const positions_x = useMemo(() => {
     return target.map((i) => data.position_x[i]);
@@ -88,7 +93,7 @@ export default function Dashboard() {
 
   var velocity = useMemo(() => {
     return target.map((i) => getValue(data.velocity_x[i], data.velocity_y[i]));
-  });
+  }, [target]);
 
   var velocity_x = useMemo(() => {
     return target.map((i) => data.velocity_x[i]);
@@ -238,50 +243,6 @@ export default function Dashboard() {
     colors: colorsDown,
   });
 
-  var colorsVideo = [
-    video === C.namesVideo[0] ? mdTheme.palette.primary.light : unSelected,
-    video === C.namesVideo[1] ? mdTheme.palette.primary.light : unSelected,
-    unSelected,
-  ];
-
-  var functionsVideo = [
-    () => {
-      setVideo(C.namesVideo[0]);
-    },
-    () => {
-      setVideo(C.namesVideo[1]);
-    },
-    () => {},
-  ];
-
-  var buttonsPlotVideo = new ButtonsMetadata({
-    functions: functionsVideo,
-    names: C.namesVideo,
-    colors: colorsVideo,
-  });
-
-  const onNewColorSelected = (event) => {
-    if (target.length === 1) setColorOption(event.target.value);
-  };
-
-  const onNewVectorSelected = (event) => {
-    setVectorOption(event.target.value);
-  };
-
-  var metaRadioSettingsColor = new RadioButtonsMetadata({
-    name: C.colorLabel,
-    values: C.colorOptions,
-    initialValue: target.length > 1 ? C.colorOptions[0] : colorOption,
-    onChange: onNewColorSelected,
-  });
-
-  var metaRadioSettingsVectors = new RadioButtonsMetadata({
-    name: C.vectorsLabel,
-    values: C.vectorsOptions,
-    initialValue: vectorOption,
-    onChange: onNewVectorSelected,
-  });
-
   var targetSelection = (id) => {
     const selectedTarget = data.mapping[id];
     if (target.includes(selectedTarget)) {
@@ -300,6 +261,40 @@ export default function Dashboard() {
   };
 
   var onDrag = (area) => {};
+
+  var dropDownMetadataVector = new DropDownMetadata({
+    onChange: (event) => {
+      setVectorOption(event.target.value);
+    },
+    values: C.vectorsOptions,
+    label: C.vectorsLabel,
+    selected: vectorOption,
+  });
+
+  var dropDownMetadataColor = new DropDownMetadata({
+    onChange: (event) => {
+      setColorOption(event.target.value);
+    },
+    values: C.colorOptions,
+    label: C.colorLabel,
+    selected: target.length > 1 ? C.colorOptions[0] : colorOption,
+  });
+
+  var dropDownMetadataVideo = new DropDownMetadata({
+    onChange: (event) => {
+      setVideo(event.target.value);
+    },
+    values: C.namesVideo,
+    label: C.videoLabel,
+    selected: video,
+  });
+
+  const onProgress = (event) => {
+    let newValue;
+    if (event.target.value === 0) newValue = 1;
+    else newValue = parseInt(event.target.value);
+    setFrame(newValue);
+  };
 
   return (
     <Box
@@ -323,119 +318,91 @@ export default function Dashboard() {
         <Grid item xs={12} md={12} lg={12}>
           <Paper
             sx={{
-              pl: 1,
-              pr: 1,
+              p: 1,
               display: "flex",
               flexDirection: "row",
-              height: paperHeigth,
-              width: paperWidthUp,
               justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <GraphButtons metaData={buttonsPlotUp} />
-            <PlotNuoto
-              metaData={metaPlotUp}
-              onDrag={onDrag}
-              width={1000}
-              height={205}
-            />
-            <SettingsRadioButtons metaData={metaRadioSettingsColor} />
-            <SettingsRadioButtons metaData={metaRadioSettingsVectors} />
-          </Paper>
-        </Grid>
-
-        <Grid
-          item
-          container
-          xs={12}
-          md={12}
-          lg={12}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="flex-start"
-        >
-          <Grid
-            item
-            container
-            xs={12}
-            md={12}
-            lg={"auto"}
-            direction="column"
-            justifyContent="space-between"
-            alignItems="center"
-            rowSpacing={1}
-            columnSpacing={1}
-            sx={{
+              height: paperUpHeight,
               width: paperWidth,
             }}
           >
-            <Grid item xs={12} md={12} lg={12}>
-              <Paper
-                sx={{
-                  p: 1,
-                  display: "flex",
-                  flexDirection: "row",
-                  height: paperHeigth,
-                  width: paperWidth,
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <GraphButtons metaData={buttonsPlotDown} />
-                <PlotNuoto
-                  metaData={metaPlotDown}
-                  onDrag={onDrag}
-                  width={960}
-                  height={205}
-                />
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={12} lg={12}>
-              <Paper
-                sx={{
-                  p: 1,
-                  display: "flex",
-                  flexDirection: "row",
-                  height: paperVideoHeigth,
-                  width: paperWidth,
-                  justifyContent: "space-evenly",
-                  alignItems: "center",
-                }}
-              >
-                <GraphButtons metaData={buttonsPlotVideo} />
-
-                <Video
-                  name={video}
-                  frame={frame}
-                  onProgressDrag={(event) => {
-                    let newValue;
-                    if (event.target.value === 0) newValue = 1;
-                    else newValue = parseInt(event.target.value);
-                    setFrame(newValue);
-                  }}
-                  onPlay={onPlay}
-                  totalFrames={data.totalFrames}
-                  playing={playing}
-                />
-              </Paper>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} md={12} lg={1.59}>
-            <Paper
-              sx={{
-                p: 1,
-                width: paperImageWidth,
-              }}
+            <Grid
+              container
+              direction="column"
+              justifyContent="space-between"
+              alignItems="flex-start"
             >
-              <ImageBody
-                targetSelection={targetSelection}
-                targets={target}
-                fillColorNotChosen={unSelected}
-                imageWidth={imageWidth}
-              />
-            </Paper>
-          </Grid>
+              <Grid item>
+                <GraphButtons metaData={buttonsPlotUp} />
+              </Grid>
+
+              <Grid container item rowSpacing={3} direction="column">
+                <Grid item>
+                  <DropDownSelection metaData={dropDownMetadataColor} />
+                </Grid>
+                <Grid item>
+                  <DropDownSelection metaData={dropDownMetadataVector} />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <PlotNuoto
+              metaData={metaPlotUp}
+              onDrag={onDrag}
+              width={colorOption === C.colorOptions[0] ? 1250 : 1200}
+              height={paperUpHeight - 30}
+            />
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12} md={12} lg={12}>
+          <Paper
+            sx={{
+              p: 1,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              height: paperDownHeight,
+              width: paperWidth,
+            }}
+          >
+            <GraphButtons metaData={buttonsPlotDown} />
+            <PlotNuoto
+              metaData={metaPlotDown}
+              onDrag={onDrag}
+              width={720}
+              height={paperDownHeight - 30}
+            />
+            <Video
+              name={video}
+              frame={frame}
+              onProgressDrag={onProgress}
+              onPlay={onPlay}
+              totalFrames={data.totalFrames}
+              playing={playing}
+            />
+            <Grid
+              container
+              direction="column"
+              justifyContent="space-between"
+              alignItems="flex-end"
+              rowSpacing={2}
+              style={{ width: "150px" }}
+            >
+              <Grid item>
+                <DropDownSelection metaData={dropDownMetadataVideo} />
+              </Grid>
+              <Grid item>
+                <ImageBody
+                  targetSelection={targetSelection}
+                  targets={target}
+                  fillColorNotChosen={unSelected}
+                  imageWidth={120}
+                />
+              </Grid>
+            </Grid>
+          </Paper>
         </Grid>
       </Grid>
     </Box>
@@ -452,7 +419,7 @@ function getValue(x, y) {
 
 function addColorBarAttr(colorbar) {
   colorbar["titleside"] = "Top";
-  colorbar["x"] = -0.25;
+  colorbar["x"] = -0.12;
   colorbar["nticks"] = 4;
   return colorbar;
 }

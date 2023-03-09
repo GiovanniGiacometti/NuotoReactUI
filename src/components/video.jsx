@@ -17,6 +17,7 @@ export default function Video({
   totalFrames,
   onProgressDrag,
   playing,
+  
 }) {
   const videoRef = useRef(null);
   const goTo = () => {
