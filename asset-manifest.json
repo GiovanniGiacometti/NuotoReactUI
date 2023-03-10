@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/NuotoReactUI/static/css/main.e6c13ad2.css",
-    "main.js": "/NuotoReactUI/static/js/main.2946807f.js",
+    "main.js": "/NuotoReactUI/static/js/main.a9a5f9e2.js",
     "static/media/lq_video_target.mp4": "/NuotoReactUI/static/media/lq_video_target.a80ceef7c4a42f4ac8dd.mp4",
     "static/media/lq_video_RoI.mp4": "/NuotoReactUI/static/media/lq_video_RoI.78fa3a21ae4146baad18.mp4",
     "static/media/lq_video.mp4": "/NuotoReactUI/static/media/lq_video.7c2922d089d464758de0.mp4",
     "static/media/download.png": "/NuotoReactUI/static/media/download.5889f2ac8a8e942105e3.png",
     "index.html": "/NuotoReactUI/index.html",
     "main.e6c13ad2.css.map": "/NuotoReactUI/static/css/main.e6c13ad2.css.map",
-    "main.2946807f.js.map": "/NuotoReactUI/static/js/main.2946807f.js.map"
+    "main.a9a5f9e2.js.map": "/NuotoReactUI/static/js/main.a9a5f9e2.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.2946807f.js"
+    "static/js/main.a9a5f9e2.js"
   ]
 }
