@@ -113,7 +113,7 @@ export default function Background() {
   };
 
   let ret;
-  if (option === names[0]) ret = <Dashboard />;
+  if (option === names[0]) ret = <DashboardNew />;
   if (option === names[1]) ret = <DashboardNew />;
   if (option === names[2]) ret = <></>;
 

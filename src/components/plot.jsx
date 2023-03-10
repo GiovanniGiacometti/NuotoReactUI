@@ -3,106 +3,95 @@ import * as C from "../data/constants";
 import { useRef, memo } from "react";
 
 function PN({ metaData, onDrag, width, height }) {
-  var plots = [];
+  var minX = metaData.limits[0];
+  var minY = metaData.limits[1];
+  var maxX = metaData.limits[2];
+  var maxY = metaData.limits[3];
 
-  let frame = parseInt(metaData.frame);
+  // for (let i = 0; i < metaData.x.length; i++) {
+  //   var xy = {
+  //     x: metaData.x[i],
+  //     y: metaData.y[i],
+  //     name: metaData.legendName[i],
+  //     mode: metaData.mode,
+  //     type: metaData.type,
+  //     marker: {
+  //       color: metaData.color[i],
+  //       size: 6,
+  //       colorbar: metaData.colorbar,
+  //     },
+  //     showlegend: true,
+  //   };
 
-  var minX = C.n;
-  var maxX = -C.n;
-  var minY = C.n;
-  var maxY = -C.n;
+  //   plots.push(xy);
 
-  for (let i = 0; i < metaData.x.length; i++) {
-    var xy = {
-      x: metaData.x[i],
-      y: metaData.y[i],
-      name: metaData.legendName[i],
-      mode: metaData.mode,
-      type: metaData.type,
-      marker: {
-        color: metaData.color[i],
-        size: 6,
-        colorbar: metaData.colorbar,
-      },
-      showlegend: true,
-    };
+  //   if (!isNaN(metaData.x[i][frame]) && !isNaN(metaData.y[i][frame])) {
+  //     var point = {
+  //       x: [metaData.x[i][frame]],
+  //       y: [metaData.y[i][frame]],
+  //       name: "frame",
+  //       mode: "markers",
+  //       type: "scatter",
+  //       marker: {
+  //         color: "rgb(255, 0, 0)",
+  //         size: 10,
+  //       },
+  //       showlegend: false,
+  //     };
+  //     plots.push(point);
 
-    plots.push(xy);
+  //     if (metaData.vector !== C.vectorsOptions[0]) {
+  //       var dx = metaData.vector.dx[i][frame];
+  //       var dy = metaData.vector.dy[i][frame];
 
-    if (!isNaN(metaData.x[i][frame]) && !isNaN(metaData.y[i][frame])) {
-      var point = {
-        x: [metaData.x[i][frame]],
-        y: [metaData.y[i][frame]],
-        name: "frame",
-        mode: "markers",
-        type: "scatter",
-        marker: {
-          color: "rgb(255, 0, 0)",
-          size: 10,
-        },
-        showlegend: false,
-      };
-      plots.push(point);
+  //       var line = {
+  //         x: [metaData.x[i][frame], metaData.x[i][frame] + dx],
+  //         y: [metaData.y[i][frame], metaData.y[i][frame] + dy],
+  //         mode: "lines",
+  //         line: {
+  //           width: 2,
+  //           color: "red",
+  //         },
+  //         type: "scatter",
+  //         showlegend: false,
+  //       };
 
-      if (metaData.vector !== C.vectorsOptions[0]) {
-        var dx = metaData.vector.dx[i][frame];
-        var dy = metaData.vector.dy[i][frame];
+  //       let angle = Math.abs((Math.atan2(dy, dx) * 180) / Math.PI);
 
-        var line = {
-          x: [metaData.x[i][frame], metaData.x[i][frame] + dx],
-          y: [metaData.y[i][frame], metaData.y[i][frame] + dy],
-          mode: "lines",
-          line: {
-            width: 2,
-            color: "red",
-          },
-          type: "scatter",
-          showlegend: false,
-        };
+  //       if (dx > 0 && dy < 0) angle = 360 - angle;
+  //       else if (dx < 0 && dy > 0) angle = 180 - angle;
+  //       else if (dx < 0 && dy < 0) angle += 180;
 
-        let angle = Math.abs((Math.atan2(dy, dx) * 180) / Math.PI);
+  //       var arrow = {
+  //         x: [metaData.x[i][frame] + dx],
+  //         y: [metaData.y[i][frame] + dy],
+  //         mode: "markers",
+  //         marker: {
+  //           symbol: "triangle-right",
+  //           angle: -angle,
+  //           size: 10,
+  //           color: "red",
+  //         },
+  //         showlegend: false,
+  //         type: "scatter",
+  //       };
 
-        if (dx > 0 && dy < 0) angle = 360 - angle;
-        else if (dx < 0 && dy > 0) angle = 180 - angle;
-        else if (dx < 0 && dy < 0) angle += 180;
+  //       plots.push(line);
+  //       plots.push(arrow);
+  //     }
+  //   }
+  //   let xFiltered = metaData.x[i].filter((val) => !isNaN(val));
+  //   let yFiltered = metaData.y[i].filter((val) => !isNaN(val));
 
-        var arrow = {
-          x: [metaData.x[i][frame] + dx],
-          y: [metaData.y[i][frame] + dy],
-          mode: "markers",
-          marker: {
-            symbol: "triangle-right",
-            angle: -angle,
-            size: 10,
-            color: "red",
-          },
-          showlegend: false,
-          type: "scatter",
-        };
+  //   minX = Math.min(...xFiltered) < minX ? Math.min(...xFiltered) : minX;
+  //   minY = Math.min(...yFiltered) < minY ? Math.min(...yFiltered) : minY;
 
-        plots.push(line);
-        plots.push(arrow);
-      }
-    }
-    let xFiltered = metaData.x[i].filter((val) => !isNaN(val));
-    let yFiltered = metaData.y[i].filter((val) => !isNaN(val));
-
-    minX = Math.min(...xFiltered) < minX ? Math.min(...xFiltered) : minX;
-    minY = Math.min(...yFiltered) < minY ? Math.min(...yFiltered) : minY;
-
-    maxX = Math.max(...xFiltered) > maxX ? Math.max(...xFiltered) : maxX;
-    maxY = Math.max(...yFiltered) > maxY ? Math.max(...yFiltered) : maxY;
-  }
+  //   maxX = Math.max(...xFiltered) > maxX ? Math.max(...xFiltered) : maxX;
+  //   maxY = Math.max(...yFiltered) > maxY ? Math.max(...yFiltered) : maxY;
+  // }
 
   let offsetX = (maxX - minX) / 15;
   let offsetY = (maxY - minY) / 15;
-
-  if (metaData.x.length === 0) {
-    minX *= -1;
-    maxX *= -1;
-    minY *= -1;
-    maxY *= -1;
-  }
 
   var layout = {
     // title: metaData.title,
@@ -150,7 +139,7 @@ function PN({ metaData, onDrag, width, height }) {
   return (
     <Plot
       ref={plotlyRef}
-      data={plots}
+      data={metaData.plots}
       layout={layout}
       config={{ displayModeBar: false }}
       onSelected={(area) => {
@@ -164,6 +153,10 @@ function PN({ metaData, onDrag, width, height }) {
     ></Plot>
   );
 }
+
+// function arePropsEqual(prevProps, nextProps) {
+//   return prevProps.metaData.isEqual(nextProps.metaData);
+// }
 
 const PlotNuoto = memo(PN);
 export default PlotNuoto;

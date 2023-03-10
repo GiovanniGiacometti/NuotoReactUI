@@ -1,7 +1,22 @@
 export default class PlotMetadata {
-  constructor({ x, y, title, xlabel, ylabel, legendName, mode, type, frame,color,colorbar, vector }) {
-    this.x = x;
-    this.y = y;
+  constructor({
+    limits,
+    plots,
+    title,
+    xlabel,
+    ylabel,
+    legendName,
+    mode,
+    type,
+    frame,
+    color,
+    colorbar,
+    vector,
+  }) {
+    // this.x = x;
+    // this.y = y;
+    this.limits = limits;
+    this.plots = plots;
     this.title = title;
     this.xlabel = xlabel;
     this.ylabel = ylabel;
@@ -15,16 +30,19 @@ export default class PlotMetadata {
     this.vector = vector;
   }
 
-
-  setColorBar(colorbar){
-    this.colorbar=colorbar;
+  setColorBar(colorbar) {
+    this.colorbar = colorbar;
   }
 
-  setColor(color){
-    this.color=color;
+  setColor(color) {
+    this.color = color;
   }
 
-  setVector(vector){
-    this.vector=vector;
+  setVector(vector) {
+    this.vector = vector;
+  }
+
+  isEqual(other){
+    
   }
 }

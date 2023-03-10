@@ -111,35 +111,27 @@ export default function DashboardNew() {
     return target.map((_) => [...Array(data.totalFrames).keys()]);
   }, [target]);
 
-  var metaPlotUp = new PlotMetadata({
-    x: positions_x,
-    y: positions_y,
-    title: "Position",
-    xlabel: "X [m]",
-    ylabel: "Y [m]",
-    legendName: legendNames,
-    mode: "markers",
-    type: "scatter",
-    frame: frame,
-  });
+  let cUp = useRef(null);
+  cUp.current = colorUp;
 
-  var colorBarUp = {};
-
-  if (target.length < 2) {
-    if (colorOption === C.colorOptions[1]) {
-      colorUp = [velocity[0]];
-      colorBarUp["title"] = "Velocity";
-      addColorBarAttr(colorBarUp);
-      metaPlotUp.setColorBar(colorBarUp);
-    } else if (colorOption === C.colorOptions[2]) {
-      colorUp = [acceleration[0]];
-      colorBarUp["title"] = "Acceleration";
-      addColorBarAttr(colorBarUp);
-      metaPlotUp.setColorBar(colorBarUp);
+  let colorBarUp = useMemo(() => {
+    console.log(target);
+    var colorBarUp = {};
+    if (target.length < 2) {
+      if (colorOption === C.colorOptions[1]) {
+        cUp.current = [velocity[0]];
+        colorBarUp["title"] = "Velocity";
+        addColorBarAttr(colorBarUp);
+      } else if (colorOption === C.colorOptions[2]) {
+        cUp.current = [acceleration[0]];
+        colorBarUp["title"] = "Acceleration";
+        addColorBarAttr(colorBarUp);
+      }
     }
-  }
+    return colorBarUp;
+  }, [target, colorOption, velocity, acceleration]);
 
-  metaPlotUp.setColor(colorUp);
+  // metaPlotUp.setColor(colorUp);
 
   var vector = vectorOption;
 
@@ -155,7 +147,8 @@ export default function DashboardNew() {
     };
   }
 
-  metaPlotUp.setVector(vector);
+  // metaPlotUp.setVector(vector);
+
   let toPlot;
   let title;
   let ylabel;
@@ -181,21 +174,6 @@ export default function DashboardNew() {
       ylabel = "Acceleration [m^2/s]";
       break;
   }
-
-  var metaPlotDown = new PlotMetadata({
-    x: frames,
-    y: toPlot,
-    title: title,
-    xlabel: "Frames",
-    ylabel: ylabel,
-    legendName: legendNames,
-    mode: "markers",
-    type: "scatter",
-    frame: frame,
-    // color: colorUp,//or target color?
-    color: colorUp,
-    vector: C.vectorsOptions[0],
-  });
 
   var functionsDown = [
     () => {
@@ -295,6 +273,214 @@ export default function DashboardNew() {
     else newValue = parseInt(event.target.value);
     setFrame(newValue);
   };
+
+  var limitsUp = useRef(null);
+
+  var plotsScatterUp = useMemo(() => {
+    var minX = C.n;
+    var maxX = -C.n;
+    var minY = C.n;
+    var maxY = -C.n;
+
+    let plots = [];
+    limitsUp.current = [];
+    console.log(cUp.current);
+
+    for (let i = 0; i < positions_x.length; i++) {
+      var xy = {
+        x: positions_x[i],
+        y: positions_y[i],
+        name: legendNames[i],
+        title: "Position",
+        mode: "markers",
+        type: "scatter",
+        marker: {
+          color: cUp.current[i],
+          size: 6,
+        },
+        showlegend: true,
+      };
+
+      if (positions_x.length === 1 && colorOption !== C.colorOptions[0]) {
+        xy["marker"]["colorbar"] = colorBarUp;
+      }
+      plots.push(xy);
+
+      let xFiltered = positions_x[i].filter((val) => !isNaN(val));
+      let yFiltered = positions_y[i].filter((val) => !isNaN(val));
+
+      minX = Math.min(...xFiltered) < minX ? Math.min(...xFiltered) : minX;
+      minY = Math.min(...yFiltered) < minY ? Math.min(...yFiltered) : minY;
+
+      maxX = Math.max(...xFiltered) > maxX ? Math.max(...xFiltered) : maxX;
+      maxY = Math.max(...yFiltered) > maxY ? Math.max(...yFiltered) : maxY;
+    }
+    if (positions_x.length === 0) {
+      minX *= -1;
+      maxX *= -1;
+      minY *= -1;
+      maxY *= -1;
+    }
+    limitsUp.current.push(minX);
+    limitsUp.current.push(minY);
+    limitsUp.current.push(maxX);
+    limitsUp.current.push(maxY);
+    return plots;
+  }, [positions_x, positions_y, legendNames, cUp, colorBarUp, colorOption]);
+
+  var plotsPointsUp = useMemo(() => {
+    let plots = [];
+    for (let i = 0; i < positions_x.length; i++) {
+      if (!isNaN(positions_x[i][frame]) && !isNaN(positions_y[i][frame])) {
+        var point = {
+          x: [positions_x[i][frame]],
+          y: [positions_y[i][frame]],
+          name: "frame",
+          mode: "markers",
+          type: "scatter",
+          marker: {
+            color: "rgb(255, 0, 0)",
+            size: 10,
+          },
+          showlegend: false,
+        };
+        plots.push(point);
+
+        if (vector !== C.vectorsOptions[0]) {
+          var dx = vector.dx[i][frame];
+          var dy = vector.dy[i][frame];
+
+          var line = {
+            x: [positions_x[i][frame], positions_x[i][frame] + dx],
+            y: [positions_y[i][frame], positions_y[i][frame] + dy],
+            mode: "lines",
+            line: {
+              width: 2,
+              color: "red",
+            },
+            type: "scatter",
+            showlegend: false,
+          };
+
+          let angle = Math.abs((Math.atan2(dy, dx) * 180) / Math.PI);
+
+          if (dx > 0 && dy < 0) angle = 360 - angle;
+          else if (dx < 0 && dy > 0) angle = 180 - angle;
+          else if (dx < 0 && dy < 0) angle += 180;
+
+          var arrow = {
+            x: [positions_x[i][frame] + dx],
+            y: [positions_y[i][frame] + dy],
+            mode: "markers",
+            marker: {
+              symbol: "triangle-right",
+              angle: -angle,
+              size: 10,
+              color: "red",
+            },
+            showlegend: false,
+            type: "scatter",
+          };
+
+          plots.push(line);
+          plots.push(arrow);
+        }
+      }
+    }
+    return plots;
+  }, [positions_x, positions_y, vector, frame]);
+
+  var metaPlotUp = new PlotMetadata({
+    plots: plotsScatterUp.concat(plotsPointsUp),
+    limits: limitsUp.current,
+
+    xlabel: "X [m]",
+    ylabel: "Y [m]",
+  });
+
+  var limitsDown = useRef(null);
+
+  var plotsScatterDown = useMemo(() => {
+    console.log("down");
+    var minX = C.n;
+    var maxX = -C.n;
+    var minY = C.n;
+    var maxY = -C.n;
+
+    let plots = [];
+    limitsDown.current = [];
+
+    for (let i = 0; i < toPlot.length; i++) {
+      var xy = {
+        x: frames[i],
+        y: toPlot[i],
+        name: legendNames[i],
+        title: title,
+        mode: "markers",
+        type: "scatter",
+        marker: {
+          color: cUp.current[i],
+          size: 6,
+        },
+        showlegend: true,
+      };
+
+      plots.push(xy);
+
+      let xFiltered = frames[i].filter((val) => !isNaN(val));
+      let yFiltered = toPlot[i].filter((val) => !isNaN(val));
+
+      minX = Math.min(...xFiltered) < minX ? Math.min(...xFiltered) : minX;
+      minY = Math.min(...yFiltered) < minY ? Math.min(...yFiltered) : minY;
+
+      maxX = Math.max(...xFiltered) > maxX ? Math.max(...xFiltered) : maxX;
+      maxY = Math.max(...yFiltered) > maxY ? Math.max(...yFiltered) : maxY;
+    }
+
+    if (toPlot.length === 0) {
+      minX *= -1;
+      maxX *= -1;
+      minY *= -1;
+      maxY *= -1;
+    }
+
+    limitsDown.current.push(minX);
+    limitsDown.current.push(minY);
+    limitsDown.current.push(maxX);
+    limitsDown.current.push(maxY);
+    return plots;
+  }, [toPlot, frames, legendNames, cUp, title]);
+
+  var plotsPointsDown = useMemo(() => {
+    let plots = [];
+
+    for (let i = 0; i < toPlot.length; i++) {
+      if (!isNaN(toPlot[i][frame]) && !isNaN(toPlot[i][frame])) {
+        var point = {
+          x: [frames[i][frame]],
+          y: [toPlot[i][frame]],
+          name: "frame",
+          mode: "markers",
+          type: "scatter",
+          marker: {
+            color: "rgb(255, 0, 0)",
+            size: 10,
+          },
+          showlegend: false,
+        };
+        plots.push(point);
+      }
+    }
+    return plots;
+  }, [toPlot, frame, frames]);
+
+  var metaPlotDown = new PlotMetadata({
+    plots: plotsScatterDown.concat(plotsPointsDown),
+    limits: limitsDown.current,
+
+    xlabel: "Frames",
+    ylabel: ylabel,
+  });
 
   return (
     <Box
