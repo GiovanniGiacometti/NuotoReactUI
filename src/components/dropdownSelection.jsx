@@ -7,7 +7,11 @@ import { memo } from "react";
 function DDS({ metaData }) {
   return (
     <FormControl>
-      <InputLabel id={metaData.selected} htmlFor={metaData.selected}>
+      <InputLabel
+        id={metaData.selected}
+        htmlFor={metaData.selected}
+        style={{ fontSize: "11px", fontWeight:"bold" }}
+      >
         {metaData.label}
       </InputLabel>
       <Select
@@ -16,7 +20,7 @@ function DDS({ metaData }) {
         onChange={metaData.onChange}
         autoWidth
         label={metaData.label}
-        style={{ fontSize: "13px" }}
+        style={{ fontSize: "11px" }}
       >
         {metaData.values.map((l, i) => (
           <MenuItem key={l + i} value={l}>

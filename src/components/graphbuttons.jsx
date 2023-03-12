@@ -6,7 +6,7 @@ function GB({ metaData }) {
     <ButtonGroup
       variant="contained"
       aria-label="vertical contained button group"
-      orientation="vertical"
+      orientation={metaData.orientation}
       sx={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
     >
       {metaData.functions.map((f, i) => (
@@ -14,7 +14,7 @@ function GB({ metaData }) {
           key={i + metaData.names[i]}
           onClick={f}
           size={"small"}
-          sx={{ backgroundColor: metaData.colors[i] , fontSize: "11px" }}
+          sx={{ backgroundColor: metaData.colors[i] , fontSize: "9px" }}
         >
           {metaData.names[i]}
         </Button>

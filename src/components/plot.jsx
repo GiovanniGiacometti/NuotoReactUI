@@ -1,4 +1,5 @@
 import Plot from "react-plotly.js";
+import Plotly from "react-plotly.js";
 import * as C from "../data/constants";
 import { useRef, memo } from "react";
 
@@ -106,7 +107,7 @@ function PN({ metaData, onDrag, width, height }) {
 
   var layout = {
     // title: metaData.title,
-    dragmode: "lasso",
+    // dragmode: "lasso",
     xaxis: {
       range: [minX - offsetX, maxX + offsetX],
       title: {
@@ -129,12 +130,13 @@ function PN({ metaData, onDrag, width, height }) {
     width: width,
     autosize: false,
     margin: {
-      r: 70,
+      r: 20,
+      l: 50,
       b: 30,
       t: 10,
     },
     legend: {
-      x: 0.95,
+      x: 0,
       y: 1,
       traceorder: "normal",
       font: {
@@ -146,22 +148,22 @@ function PN({ metaData, onDrag, width, height }) {
     },
   };
 
-  const plotlyRef = useRef(null);
+  // const plotlyRef = useRef(null);
   return (
     <Plot
-      ref={plotlyRef}
+      // ref={plotlyRef}
       data={plots}
       layout={layout}
       config={{ displayModeBar: false }}
-      onSelected={(area) => {
-        const plotlyNode = plotlyRef.current;
-        console.log(area);
-        if (plotlyNode) {
-        }
-        onDrag();
-      }}
-      onDoubleClick={() => {}}
-    ></Plot>
+      // onSelected={(area) => {
+      //   const plotlyNode = plotlyRef.current;
+      //   console.log(area);
+      //   if (plotlyNode) {
+      //   }
+      //   // onDrag();
+      // }}
+      // onDoubleClick={() => {}}
+    />
   );
 }
 

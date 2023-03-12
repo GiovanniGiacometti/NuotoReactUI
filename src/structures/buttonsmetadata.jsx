@@ -1,8 +1,9 @@
 export default class ButtonsMetadata {
-  constructor({ functions, names, colors }) {
+  constructor({ functions, names, colors, orientation }) {
     this.functions = functions;
     this.names = names;
     this.colors = colors;
+    this.orientation = orientation;
   }
 
   isEqual(other) {

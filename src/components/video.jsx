@@ -17,7 +17,7 @@ export default function Video({
   totalFrames,
   onProgressDrag,
   playing,
-  
+  widthIn,
 }) {
   const videoRef = useRef(null);
   const goTo = () => {
@@ -37,11 +37,12 @@ export default function Video({
         <ReactPlayer
           ref={videoRef}
           onReady={goTo()}
-          // onClick={onPlay}
           url={require("../videos/" + name + ".mp4")}
           muted
-          width={width + "px"}
-          height={height + "px"}
+          width={parseInt(widthIn) + "px"}
+          height={
+            (parseInt(widthIn) * parseInt(height)) / parseInt(width) + "px"
+          }
         ></ReactPlayer>
         <Grid
           container
@@ -50,9 +51,13 @@ export default function Video({
           xs={12}
           md={12}
           lg={12}
-          justifyContent="space-evenly"
+          justifyContent="center"
           alignItems="center"
-          style={{ position: "relative", top: "-60px" }}
+          width={parseInt(widthIn) + "px"}
+          style={{
+            position: "relative",
+            top: "-60px",
+          }}
         >
           <Grid item xs={9} md={9} lg={9}>
             <IconButton onClick={onPlay}>
@@ -61,14 +66,18 @@ export default function Video({
             </IconButton>
           </Grid>
           <Grid item xs={3} md={3} lg={3}>
-            <Typography>{"Frame : " + frame}</Typography>
+            <Typography align="center">{"Frame : " + frame}</Typography>
           </Grid>
         </Grid>
         <ProgressBar
           max={totalFrames}
           onProgressDrag={onProgressDrag}
           frame={frame}
-          style={{ position: "relative", top: "-60px", width: parseInt(width) }}
+          style={{
+            position: "relative",
+            top: "-62px",
+            width: parseInt(widthIn),
+          }}
         />
       </Grid>
     </>

@@ -19,7 +19,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 
 const mdTheme = createTheme();
-const drawerWidth = 200;
+const drawerWidth = 170;
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -57,16 +57,20 @@ const Drawer = styled(MuiDrawer, {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
-      width: theme.spacing(7),
+      width: theme.spacing(10),
       [theme.breakpoints.up("sm")]: {
-        width: theme.spacing(9),
+        width: theme.spacing(7),
       },
     }),
   },
 }));
 
-const names = ["DASHBOARD1", "DASHBOARDNEW", "COMPARE"];
-const icons = [<DashboardIcon />, <DashboardIcon />, <CompareArrowsIcon />];
+// const names = ["DASHBOARD1", "DASHBOARDNEW", "COMPARE"];
+// const icons = [<DashboardIcon />, <DashboardIcon />, <CompareArrowsIcon />];
+
+const names = ["DASHBOARD", "In progress"];
+const icons = [<DashboardIcon />, <CompareArrowsIcon />];
+
 const colorInit = [
   mdTheme.palette.primary.light,
   mdTheme.palette.grey[400],
@@ -91,14 +95,6 @@ export default function Background() {
         mdTheme.palette.grey[400],
       ]);
     },
-    () => {
-      setOption(names[2]);
-      setColors([
-        mdTheme.palette.grey[400],
-        mdTheme.palette.grey[400],
-        mdTheme.palette.primary.light,
-      ]);
-    },
   ];
 
   let listItemMetadata = new ListItemMetadata({
@@ -113,9 +109,8 @@ export default function Background() {
   };
 
   let ret;
-  if (option === names[0]) ret = <Dashboard />;
-  if (option === names[1]) ret = <DashboardNew />;
-  if (option === names[2]) ret = <></>;
+  if (option === names[0]) ret = <DashboardNew />;
+  if (option === names[1]) ret = <></>;
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -142,12 +137,11 @@ export default function Background() {
             </IconButton>
             <Typography
               component="h1"
-              variant="h6"
               color="inherit"
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              {option === names[0] ? names[0] : names[1]}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -158,14 +152,12 @@ export default function Background() {
               display: "flex",
               alignItems: "center",
               justifyContent: "flex-end",
-              px: [1],
             }}
           >
             <IconButton onClick={toggleDrawer}>
               <ChevronLeftIcon />
             </IconButton>
           </Toolbar>
-          <Divider />
           <List component="nav">
             <ListItems metaData={listItemMetadata} />
           </List>

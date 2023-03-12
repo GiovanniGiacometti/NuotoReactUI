@@ -18,9 +18,9 @@ import DropDownMetadata from "../structures/dropdownmetadata";
 
 const mdTheme = createTheme();
 
-const paperUpHeight = 310;
-const paperDownHeight = 330;
-const paperWidth = 1400;
+const paperUpHeight = 300;
+const paperDownHeight = 360;
+const paperWidth = 1450;
 
 // const paperVideoHeigth = 270;
 // const imageWidth = 190;
@@ -34,7 +34,7 @@ const unSelected = mdTheme.palette.grey[400];
 const initialColorOption = C.colorOptions[0];
 const initialVectorOption = C.vectorsOptions[0];
 
-const MS_PER_FRAME = 100;
+const MS_PER_FRAME = 50;
 
 export default function DashboardNew() {
   //selected target (head, shoulder...)
@@ -56,6 +56,9 @@ export default function DashboardNew() {
   const [vectorOption, setVectorOption] = useState(initialVectorOption);
 
   const [video, setVideo] = useState(C.namesVideo[0]);
+
+
+  
 
   const timerRef = useRef(null);
   useEffect(() => {
@@ -235,12 +238,14 @@ export default function DashboardNew() {
     functions: functionsUp,
     names: namesUp,
     colors: colorsUp,
+    orientation: "vertical",
   });
 
   var buttonsPlotDown = new ButtonsMetadata({
     functions: functionsDown,
     names: C.lowerPlottingOptions,
     colors: colorsDown,
+    orientation: "horizontal",
   });
 
   var targetSelection = (id) => {
@@ -271,10 +276,14 @@ export default function DashboardNew() {
     selected: vectorOption,
   });
 
+  var f = (event) => {
+    if (positions_x.length > 1) return;
+    console.log(target);
+    setColorOption(event.target.value);
+  };
+
   var dropDownMetadataColor = new DropDownMetadata({
-    onChange: (event) => {
-      setColorOption(event.target.value);
-    },
+    onChange: f,
     values: C.colorOptions,
     label: C.colorLabel,
     selected: target.length > 1 ? C.colorOptions[0] : colorOption,
@@ -312,7 +321,7 @@ export default function DashboardNew() {
         sx={{
           margin: "0 auto",
           mt: 6,
-          width: "90vw",
+          width: "95vw",
         }}
       >
         <Grid item xs={12} md={12} lg={12}>
@@ -349,8 +358,8 @@ export default function DashboardNew() {
             <PlotNuoto
               metaData={metaPlotUp}
               onDrag={onDrag}
-              width={colorOption === C.colorOptions[0] ? 1250 : 1200}
-              height={paperUpHeight - 30}
+              width={1300}
+              height={paperUpHeight - 15}
             />
           </Paper>
         </Grid>
@@ -361,19 +370,33 @@ export default function DashboardNew() {
               p: 1,
               display: "flex",
               flexDirection: "row",
-              justifyContent: "space-between",
+              justifyContent: "flex-start",
               alignItems: "center",
               height: paperDownHeight,
               width: paperWidth,
             }}
           >
-            <GraphButtons metaData={buttonsPlotDown} />
-            <PlotNuoto
-              metaData={metaPlotDown}
-              onDrag={onDrag}
-              width={720}
-              height={paperDownHeight - 30}
-            />
+            <Grid
+              container
+              direction="column"
+              justifyContent="center"
+              alignItems="flex-start"
+              height={paperDownHeight}
+              width={700}
+            >
+              <Grid item>
+                <GraphButtons metaData={buttonsPlotDown} />
+              </Grid>
+              <Grid item>
+                <PlotNuoto
+                  metaData={metaPlotDown}
+                  onDrag={onDrag}
+                  width={700}
+                  height={paperDownHeight - 40}
+                />
+              </Grid>
+            </Grid>
+
             <Video
               name={video}
               frame={frame}
@@ -381,14 +404,14 @@ export default function DashboardNew() {
               onPlay={onPlay}
               totalFrames={data.totalFrames}
               playing={playing}
+              widthIn={"610"}
             />
             <Grid
               container
               direction="column"
               justifyContent="space-between"
               alignItems="flex-end"
-              rowSpacing={2}
-              style={{ width: "150px" }}
+              rowSpacing={5}
             >
               <Grid item>
                 <DropDownSelection metaData={dropDownMetadataVideo} />
@@ -398,7 +421,8 @@ export default function DashboardNew() {
                   targetSelection={targetSelection}
                   targets={target}
                   fillColorNotChosen={unSelected}
-                  imageWidth={120}
+                  imageWidth={100}
+                  
                 />
               </Grid>
             </Grid>

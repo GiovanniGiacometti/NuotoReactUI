@@ -23201,11 +23201,23 @@ export const mapping = {
 export const totalFrames = 694;
 
 export const colorMapping = [
-  "#ffeb3b",
+  "#424242",
   "#0d47a1",
   "#64b5f6",
   "#1b5e20",
   "#66bb6a",
+  "#b2102f",
+  "#ff4569",
+  "#9500ae",
+  "#dd33fa",
+  "#ff9100",
+  "#ffa733",
+  "#fbc02d",
+  "#fff176",
+  "#0097a7",
+  "#80deea",
+  "#c2185b",
+  "#f06292"
 ];
 
 export const acceleration_x = velocity_x;
